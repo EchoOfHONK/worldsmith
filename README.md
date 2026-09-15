@@ -24,9 +24,9 @@
 
 `npm test` — проверки модели, редактора и worker без браузера.
 
-`npm run test:world-render` — браузерные проверки масштаба, швов, кистей и генерации.
+`npm run test:world-render` — браузерные проверки масштаба, швов, кистей, генерации, импорта пользовательского PNG, Save/Load и экспорта PNG 2K/4K/8K.
 
-`npm run test:performance` — пять минут нагрузки при 1920×1080 и 2300 дополнительных объектах. `WORLDSMITH_SOAK_SECONDS` меняет длительность. `WORLDSMITH_TEST_OUTPUT` задаёт папку результатов. `WORLDSMITH_PLAYWRIGHT` задаёт путь к Playwright, `WORLDSMITH_BROWSER` — путь к установленному Chromium/Chrome. При отсутствии browser override нужен браузер Playwright.
+`npm run test:performance` — пять минут нагрузки при 1920×1080 и 2300 дополнительных объектах. `WORLDSMITH_SOAK_SECONDS` меняет длительность. `WORLDSMITH_TEST_OUTPUT` задаёт папку результатов. `WORLDSMITH_PLAYWRIGHT` задаёт путь к Playwright, `WORLDSMITH_BROWSER` — путь к установленному Chromium/Chrome. При отсутствии browser override нужен браузер Playwright. `WORLDSMITH_BASE_URL` задаёт адрес тестового сервера (по умолчанию `http://127.0.0.1:4173`); при занятом порте запустите сервер с другим `PORT` и укажите этот адрес.
 
 Если запуск отдельного браузера недоступен, откройте `http://127.0.0.1:4173/tests/browser-acceptance.html`. Первая кнопка проверяет рендер и скачивает PNG 2K/4K/8K; вторая запускает пятиминутный тест. Тестовый iframe изменяет собственный демо-мир. Проверка кэша не измеряет всю RAM или память GPU.
 

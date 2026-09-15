@@ -22,7 +22,10 @@ Statuses: **Open** = unresolved; **Implemented / verify** = code exists, accepta
 | D01 | Empty brush strokes discarded redo history — **Verified fix** | `beginStroke/endStroke` commit history only when cells change. Covered in `tests.cjs`. |
 | D02 | Renderer readiness could describe an old camera state — **Verified fix (focused)** | `waitReady` and browser settle predicates check pending render, camera zoom and world revision. Current-camera checks passed; preserve them. |
 | D03 | Render-worker failure/disposal could leave jobs waiting — **Verified fix** | Reject failed active/queued/future requests and settle disposal jobs. Two `tests-render-service.cjs` checks pass. |
-| D04 | Soak test omitted the final brush transaction — **Implemented / verify** | Ensure every synthetic stroke ends before reporting undo/memory. Full corrected five-minute run remains pending. |
-| E01 | Standalone Playwright browser launch blocked in current sandbox — **Limitation** | Use an available authorized browser or browser acceptance page. Report unavailable measurements; do not weaken app security or claim tests passed. |
+| D04 | Soak test omitted the final brush transaction — **Verified fix** | Ensure every synthetic stroke ends before reporting undo/memory. Corrected 300-second run completed with ten undo entries, including the final stroke; see VALIDATION.md. |
+| E01 | Standalone Playwright browser launch blocked in earlier sandbox — **Historical environment limitation** | Use an available authorized browser or browser acceptance page. Report unavailable measurements; do not weaken app security or claim tests passed. |
 | L01 | Old small raster sources lose detail when enlarged — **Limitation** | Show source resolution, select suitable masters/LOD, recommend larger custom sources. Rendering cannot recover missing pixels. |
 | L02 | Manual terrain edits leave previously generated rivers/roads in place — **Limitation** | Explain existing behavior; regeneration or manual path editing is required. A future recomputation feature needs explicit scope and tests. |
+
+| D05 | PNG export fails because a worker helper shadows self.fonts — **Verified fix** | Rename fonts helper to loadFonts; new real-browser import and 2K/4K/8K export checks cover this path. |
+| D06 | Documented inventory generator missing from Git — **Verified fix** | Restored scripts/update-contents.cjs; generation and --check verify all 107 Git-visible files and entry anchors. |

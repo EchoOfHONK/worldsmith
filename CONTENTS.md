@@ -67,7 +67,7 @@ Entry points below show literal search anchors and their current first matching 
 | [src/random.js](src/random.js) | Seeded hash, random numbers, coherent noise and fBm | `function hash` (2); `function random` (3); `function noise` (4); `function fbm` (5) |
 | [src/render-config.js](src/render-config.js) | Render budgets, chunk sizes, quality scales and LOD levels | `WS.config.render=` (2) |
 | [src/render-service.js](src/render-service.js) | Worker queue, project synchronization and job lifecycle | `class RenderService` (2); `patch(p` (8); `request(type` (12); `fail(error)` (11); `dispose(){` (14) |
-| [src/render-worker.js](src/render-worker.js) | Offscreen rendering, asset transfer, export bands and thumbnails | `importScripts` (3); `function fonts` (9); `self.onmessage` (11) |
+| [src/render-worker.js](src/render-worker.js) | Offscreen rendering, asset transfer, export bands and thumbnails | `importScripts` (3); `function loadFonts` (10); `self.onmessage` (12) |
 | [src/renderer.js](src/renderer.js) | Layered raster composition, object drawing, coast contours and export text | `function contours` (6); `function object` (22); `function labels` (38); `function render` (45) |
 | [src/storage.js](src/storage.js) | Project validation, JSON save/load and banded PNG export | `function validate` (2); `function json` (22); `function png` (25); `W.storage=` (26) |
 | [src/surface.js](src/surface.js) | Smoothed elevation field and world-space surface microdetails | `function heightField` (3); `function details` (5); `W.surface=` (6) |
@@ -82,7 +82,7 @@ Entry points below show literal search anchors and their current first matching 
 | File | Purpose | Search anchors (line) |
 | --- | --- | --- |
 | [scripts/bundle-fonts.cjs](scripts/bundle-fonts.cjs) | Download and bundle font styles and files | `https` (3) |
-| [scripts/update-contents.cjs](scripts/update-contents.cjs) | Generate/check this index; edit purpose and anchor metadata here | `const metadata=` (5) |
+| [scripts/update-contents.cjs](scripts/update-contents.cjs) | Generate/check this index; edit purpose and anchor metadata here | `const metadata=` (4) |
 
 ## Browser test pages
 
