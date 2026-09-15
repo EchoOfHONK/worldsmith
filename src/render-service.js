@@ -1,0 +1,17 @@
+(function(W){
+ class RenderService{
+ constructor(){this.worker=new Worker('src/render-worker.js');this.jobs=[];this.next=0;this.revision=0;this.custom=new Map();this.worker.onmessage=({data:r})=>{const job=this.active;if(!job||r.id!==job.id){r.image?.close();if(r.error)console.error(r.error);return;}this.active=null;r.error?job.reject(Error(r.error)):job.resolve(r);this.pump();};this.worker.onerror=e=>this.fail(Error(e.message||'Render worker failed'));this.worker.onmessageerror=()=>this.fail(Error('Invalid render worker message'));this.ready=this.assets();}
+ async assets(){await W.assets.ready;const images=[],map=new Map(),sources=[];for(let i=0;i<108;i++){const s=W.assets.masterSource(i);if(!s){sources.push(null);continue;}if(!map.has(s.image)){map.set(s.image,images.length);images.push(await createImageBitmap(s.image));}sources.push({image:map.get(s.image),sx:s.sx,sy:s.sy,sw:s.sw,sh:s.sh});}this.worker.postMessage({type:'assets',sources,images},images);}
+ async syncCustom(p){for(const d of p.customAssets||[]){if(this.custom.get(d.id)===d.dataURL)continue;const im=W.custom.images.get(d.dataURL);await im.decode();const image=await createImageBitmap(im);this.worker.postMessage({type:'custom',id:d.id,image,definition:W.config.objects[d.id]},[image]);this.custom.set(d.id,d.dataURL);}}
+ async project(p,revision){await this.ready;await this.syncCustom(p);if(revision!==this.revision)return;this.worker.postMessage({type:'project',project:p,revision,definitions:Object.fromEntries(Object.entries(W.config.objects).filter(([,d])=>d.custom))});this.synced=revision;this.pump();}
+ setProject(p,revision){this.revision=revision;this.cancelDraws();return this.project(p,revision);}
+ patch(p,r,revision){this.revision=revision;this.cancelDraws();const x=Math.max(0,Math.floor(r.x/5)),y=Math.max(0,Math.floor(r.y/5)),right=Math.min(p.cols,Math.ceil((r.x+r.width)/5)+1),bottom=Math.min(p.rows,Math.ceil((r.y+r.height)/5)+1),values={};for(const key of ['terrain','biomes','humidity','temperature','forestDensity','regionMap']){const a=[];for(let yy=y;yy<bottom;yy++)for(let xx=x;xx<right;xx++)a.push(p[key][yy*p.cols+xx]);values[key]=a;}this.worker.postMessage({type:'patch',cells:{x,y,width:right-x,height:bottom-y},values,rect:r,revision});this.synced=revision;this.pump();}
+ pruneDraws(keys){this.jobs=this.jobs.filter(j=>{if(j.type==='draw'&&!keys.has(j.key)){j.resolve({stale:true});return false;}return true;});}
+ cancelDraws(){this.jobs=this.jobs.filter(j=>{if(j.type==='draw'){j.resolve({stale:true});return false;}return true;});}
+ fail(error){this.failure=error;this.active?.reject(error);this.active=null;for(const job of this.jobs)job.reject(error);this.jobs=[];this.worker.terminate();}
+ request(type,options={},priority=0){if(this.failure)return Promise.reject(this.failure);if(this.disposed)return Promise.reject(Error('Render service disposed'));return new Promise((resolve,reject)=>{this.jobs.push({...options,type,id:++this.next,resolve,reject,priority});this.jobs.sort((a,b)=>b.priority-a.priority);this.pump();});}
+ pump(){if(this.active||this.synced!==this.revision||!this.jobs.length)return;const job=this.active=this.jobs.shift(),{resolve,reject,...message}=job;this.worker.postMessage(message);}
+ dispose(){this.disposed=true;this.worker.terminate();this.active?.resolve({stale:true});this.active=null;this.jobs.forEach(j=>j.resolve({stale:true}));this.jobs=[];}
+ }
+ W.RenderService=RenderService;
+})(WS);

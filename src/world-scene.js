@@ -1,0 +1,21 @@
+(function(W){
+ const states=new WeakMap(),S=128;
+ const intersects=(a,b)=>a.x+a.width>=b.x&&a.y+a.height>=b.y&&a.x<=b.x+b.width&&a.y<=b.y+b.height;
+ function bounds(o){const d=W.config.objects[o.type]||{},w=(d.size||35)*(o.scale||1),h=d.custom?w*d.pixelHeight/d.pixelWidth:w,a=d.custom?d.anchor:{x:.5,y:.8},r=(o.rotation||0)*Math.PI/180,cs=Math.cos(r),sn=Math.sin(r);let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;for(const x of [-w*a.x,w*(1-a.x)])for(const y of [-h*a.y,h*(1-a.y)]){const xx=o.position.x+x*cs-y*sn,yy=o.position.y+x*sn+y*cs;x0=Math.min(x0,xx);y0=Math.min(y0,yy);x1=Math.max(x1,xx);y1=Math.max(y1,yy);}return{x:x0-5,y:y0-5,width:x1-x0+10,height:y1-y0+10};}
+ class Grid{
+  constructor(){this.cells=new Map();this.count=0;}
+  add(o,b){o.bounds=b;this.count++;for(let y=Math.floor(b.y/S);y<=Math.floor((b.y+b.height)/S);y++)for(let x=Math.floor(b.x/S);x<=Math.floor((b.x+b.width)/S);x++){const k=x+','+y;if(!this.cells.has(k))this.cells.set(k,[]);this.cells.get(k).push(o);}}
+  query(r,layer){const out=[],seen=new Set();for(let y=Math.floor(r.y/S);y<=Math.floor((r.y+r.height)/S);y++)for(let x=Math.floor(r.x/S);x<=Math.floor((r.x+r.width)/S);x++)for(const o of this.cells.get(x+','+y)||[]){if(seen.has(o)||layer&&o.layer!==layer)continue;seen.add(o);if(intersects(o.bounds,r))out.push(o);}return out;}
+ }
+ function state(p){let s=states.get(p);if(s)return s;s={blocks:new Map(),objects:new Grid(),riverCells:new Set(),noise:W.random.noise(p.seed+'detail')};for(const o of p.objects)s.objects.add({...o},bounds(o));for(const r of p.rivers)for(const pt of r.points)s.riverCells.add(W.model.index(p,pt.x,pt.y));states.set(p,s);return s;}
+ function block(p,s,bx,by){const key=bx+','+by;if(s.blocks.has(key))return s.blocks.get(key);const list=[],n=s.noise,rx=bx*S,ry=by*S;
+  // Global lattices are only partitioned for lookup, never seeded per chunk.
+  for(const layer of ['Mountains','Vegetation']){const mountain=layer==='Mountains',dx=mountain?49:20,dy=mountain?46:19,ox=mountain?35:20,oy=mountain?40:20;for(let gy=Math.ceil((ry-oy)/dy);oy+gy*dy<ry+S;gy++)for(let gx=Math.ceil((rx-ox)/dx);ox+gx*dx<rx+S;gx++){const x=ox+gx*dx,y=oy+gy*dy;if(x<ox||y<oy||x>=p.width-15||y>=p.height-15)continue;const r=n(x/(mountain?11:4)+(mountain?0:7),y/(mountain?11:4)),xx=x+(mountain?n(x/8,y/8)-.5:r-.5)*(mountain?43:24),yy=y+(n(x/(mountain?8:6)+(mountain?7:0),y/(mountain?8:6))-.5)*(mountain?39:24),i=W.model.index(p,xx,yy),b=p.biomes[i],def=W.config.biomes[b];let id,size,variant;
+   if(mountain){if(!['mountain','snow','rocky'].includes(b)||b==='rocky'&&r<.78)continue;variant=n(x/9+33,y/9);const chain=r>.82&&b!=='rocky';size=b==='rocky'?25+r*29:chain?95+r*30:43+r*58;id=b==='rocky'?2:chain?def.sprite:16+(b==='snow'?4:0)+Math.min(3,Math.floor(variant*4));}
+   else{if(p.terrain[i]<p.seaLevel||def?.layer!=='Vegetation'||r>p.forestDensity[i]*.9||s.riverCells.has(i))continue;if(s.objects.query({x:xx-30,y:yy-30,width:60,height:60}).some(o=>o.layer!=='Decorations'&&Math.hypot(o.position.x-xx,o.position.y-yy)<30))continue;variant=n(x/5+30,y/5);id=['forest','conifer'].includes(b)&&variant<.88?24+(b==='conifer'?4:0)+Math.min(3,Math.floor(variant*4)):def.sprite??4;size=27+r*31;}
+   list.push({x:xx,y:yy,id,size,variant,layer,bounds:{x:xx-size*.5-2,y:yy-size*.8-2,width:size+4,height:size+4}});
+  }}s.blocks.set(key,list);return list;
+ }
+ function sprites(p,r,layer){const s=state(p),out=[],pad=150;for(let y=Math.max(0,Math.floor((r.y-pad)/S));y<=Math.floor(Math.min(p.height,r.y+r.height+pad)/S);y++)for(let x=Math.max(0,Math.floor((r.x-pad)/S));x<=Math.floor(Math.min(p.width,r.x+r.width+pad)/S);x++)for(const o of block(p,s,x,y))if(o.layer===layer&&intersects(o.bounds,r))out.push(o);out.sort((a,b)=>a.y-b.y);return out;}
+ W.scene={Grid,bounds,intersects,sprites,objects:(p,r,l)=>state(p).objects.query(r,l).sort((a,b)=>a.position.y-b.position.y),invalidate(p,r){if(!r){states.delete(p);return;}const s=states.get(p);if(!s)return;for(const k of s.blocks.keys()){const [x,y]=k.split(',').map(Number);if(intersects({x:x*S-180,y:y*S-180,width:S+360,height:S+360},r))s.blocks.delete(k);}},stats(p){const s=state(p);return{objectCount:s.objects.count,blocks:s.blocks.size,entities:[...s.blocks.values()].reduce((n,b)=>n+b.length,0)+s.objects.count};}};
+})(WS);

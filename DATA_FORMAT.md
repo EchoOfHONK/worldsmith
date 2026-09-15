@@ -1,0 +1,58 @@
+# Worldsmith map data v2
+
+Координаты — пиксели карты, начало сверху слева. X вправо, Y вниз. `cellSize=5`; `cols=ceil(width/5)`; `rows=ceil(height/5)`. Индекс ячейки — `row * cols + column`.
+
+Проект содержит:
+
+- `version`, `title`, `subtitle`, `seed`, `width`, `height`, `preset`, `params`.
+- `terrain`: высота 0–1. Вода ниже `seaLevel`.
+- `temperature`, `humidity`, `forestDensity`: массивы 0–1 размером `cols * rows`.
+- `biomes`: идентификатор биома в каждой ячейке, `water` для воды.
+- `regionMap`: индекс региона в `regions`, либо −1 для воды/неопределённой территории.
+- `rivers`: `id`, `name`, `width`, `points:[{x,y}]`. Сгенерированные реки также имеют `source`, `mouth`, `end` (ocean/lake/confluence) и `sourceElevation`. После ручного стирания линии метаданные источника сохраняются как происхождение исходной реки.
+- `roads`: `id`, `width`, `points`, `kind` (road/trail).
+- `objects`: `id`, `name`, `type`, `icon`, `description`, `position`, `tags`, `properties`, `color`, `faction`, `region`, `layer`, `variant`.
+- `labels`: `id`, `text`, `position`, `anchor`, `kind`, `size`, `rotation`, `color`, `manual`, `objectId`, `hidden`. `hidden` обозначает подпись, не нашедшую свободное место при авторазмещении. `anchor` — исходная точка автоподписи.
+- `regions`: `id`, `name`, `faction`, `color`, `position`.
+- `layers`: `visible`, `locked`, `export` для каждого слоя; `layerOrder` — порядок отрисовки.
+- `styling`: `theme`, `relief`, `texture`, `atmosphere`, `labels`, `frame`.
+
+Игровой экспорт дополнительно содержит `schema: worldsmith/game-map/v2`, `size`, `coordinateSystem`, `heightData` (копия `terrain`), `poi` (объекты, кроме Decorations), `biomeDefinitions`, `objectDefinitions`. Оба вида JSON можно загрузить в редактор. Игровой экспорт может быть больше проекта из-за явного включения определений и массива heightData.
+
+## Расширение
+
+Новый пресет: добавьте запись в `config.presets` с `description`, `params` и `colors`. Все 13 параметров находятся в диапазоне 0–100. Интерфейс и превью подхватят запись автоматически.
+
+Новый биом: добавьте в `config.biomes` запись с `name`, `color`, `layer` и необязательным `sprite`. Он появится в кистях и легенде. Для автоматического распределения задайте `rule: { temperature:[min,max], humidity:[min,max], altitude:[min,max] }` с диапазонами 0–1. Правила дополнительных биомов применяются после встроенного климатического распределения.
+
+Новый объект: добавьте `name`, `icon`, `layer`, `size`, опционально `sprite` в `config.objects`. Библиотека, инспектор, сериализация и размещение подхватят запись. Индексы 0–15 относятся к atlas.png, 16–31 — к details.png, 32–39 — к landmarks.png. Объекты с новым специализированным программным рисунком добавляются в функцию `renderer.object`.
+
+Новый художественный стиль: добавьте запись с `name`, `saturation`, `exposure`, `ocean:[r,g,b]`, `paper:'#rrggbb'` в `config.styles`. Рендер и панель оформления используют её автоматически.
+
+Игровые данные объекта размещайте в `properties`, а классификацию — в `tags`, `faction` и `region`. Формы выводят строки как текст; введённые пользователем значения не вставляются в HTML.
+
+## Atelier 03: каталог и пользовательские ассеты
+
+`src/catalog.js` расширяет `config.objects`, сохраняя прежние id и совместимость v1/v2. Каждая запись: id, name, category, description, assetKind, assetPath, previewPath, recommendedSize {width,height}, size (ширина на карте), scaleRange, anchor {x,y}, tags, placementRules, rarity, biomeAffinity. Индексы 40–55: settlements-v3.png; 56–71: citadels-v3.png; 72–87: relics-v3.png; 88–103: wilds-v3.png. Исходные PNG в комплекте. Для нового набора расширьте адаптер `assets.js`; для нового типа в существующем наборе достаточно записи каталога.
+
+`src/placement.js` применяет высотные ограничения, береговое положение, близость к рекам и предпочтения биомов. rarity задаёт относительный вес выбора из подходящих объектов. Списки кандидатов для этапов поселений и редких мест находятся в generator.js / placement.js. Новые категории появляются в UI автоматически; включение новой категории в конкретный этап генерации задаётся явно.
+
+Поля экземпляра: `scale` (0.25–3, по умолчанию 1), `rotation` (−180…180°, по умолчанию 0). Координаты указывают на anchor. Для растрового ассета высота пропорциональна исходному изображению; встроенные атласы имеют квадратные ячейки. Изменение масштаба не меняет положение объекта или его подписи.
+
+Проект v2 допускает `customAssets` — массив определений {id: "custom-…", name, category, description, tags, size, anchor, dataURL, pixelWidth, pixelHeight}. Разрешены только встроенные PNG/WebP data URL; внешние адреса и SVG не принимаются. Изображение декодируется и проверяется до загрузки проекта. `customCategories` сохраняет пользовательские имена категорий. Локальная библиотека хранится отдельно в IndexedDB `worldsmith-assets`, object store `library`.
+
+`libraryHidden: true` скрывает удалённый из коллекции ассет, сохраняя его для существующих экземпляров. Экземпляры ссылаются через `type` на id ассета. Игровой JSON содержит `customAssets`; `objectDefinitions` содержит метаданные и embedded-ссылку без повторной копии base64. Для нового типа сложного ресурса предусмотрено поле `assetKind`; текущие адаптеры: atlas2d / image2d / программные рисунки. 3D-адаптер в этой версии не реализован.
+
+Поверхность и сглаженное поле высот кэшируются по объекту проекта. Внешний код, меняющий terrain/biomes на месте, должен вызвать `WS.surface.invalidate(project)` перед отрисовкой. Штатные кисти делают это автоматически; Undo/Redo создают новый объект проекта.
+
+## Atelier 04 — отображение без промежуточного уменьшения
+
+Формат проекта остаётся v2, сохранения v1/v2 совместимы. SVG-подписи и растровые тайлы — производные представления; в JSON остаются исходные данные мира, без запечённого изображения редактора.
+
+- render-config.js: коэффициенты Standard/High/Ultra, уровни LOD, бюджеты кэшей, предел масштаба и экспорта.
+- viewport-renderer.js: экранные Canvas-слои с backing size = CSS size × DPR × quality; преобразование мировых координат; отдельный SVG overlay для Labels. Подписи всегда поверх растровых слоёв. Старый #map — скрытый небольшой обзор для миникарты и превью импорта, а не рабочее изображение.
+- terrain-tiles.js: Base / Water / Height как три канала каждого тайла, 256 px + gutters. LOD выбирается по zoom × DPR × quality. LRU до 192 тайлов, около 146 MiB для трёх каналов. Изменения terrain/biomes требуют surface.invalidate(project).
+- asset-lod.js: каждый уменьшенный вариант строится прямо из master; при превышении исходного размера используется оригинал. Кэш вариантов ограничен 64 MiB. nativeResolution(id) возвращает ширину исходника.
+- renderer.js: options.rect задаёт видимую область мира, resolution — пиксели на мировую единицу, onlyLayer — отдельный проход. Тот же рендер обслуживает редактор и экспорт.
+- storage.js: PNG по полосам 512 физических пикселей, до 8192 по длинной стороне, с исходными пропорциями и выбранными слоями. Подписи растеризуются сразу в целевом разрешении.
+- quality-ui.js: предпочтения качества локальны браузеру, не меняют данные игры.
