@@ -1,0 +1,18 @@
+(function(W){
+ const S=W.semantic;
+ const masters=new Set(['castle','portcity','bridge','stonebridge','longbridge','temple','royalcastle','maritimecapital','royalbridge','grandcathedral']);
+ function kind(o){const d=W.config.objects[o.type];if(!d||d.custom||masters.has(o.type))return null;if(['camp','caravancamp'].includes(o.type))return'camp';if(['harbor','port','dock','pier','fishingvillage'].includes(o.type))return'port';if(d.category==='settlements'&&!['smallhouse','house','longhouse','farm'].includes(o.type))return'settlement';if(d.category==='ruins')return'ruin';if(['bigmountain','smallmountain','snowmountain','rockypeak','rockmass','forestcluster','deadtree','tree','ancientoak','rock','cliff'].includes(o.type))return'nature';return null;}
+ function children(p,o,z){const weight=S.weights(z).hierarchy,d=W.config.objects[o.type],type=kind(o),out=[];if(!weight||!d||d.custom)return out;const b=W.scene.bounds(o),size=d.size*(o.scale||1),seed=S.id(p,'poi',o.id,o.type),road=W.detail.proximity(p,o.position.x,o.position.y),rotation=(o.rotation||0)*Math.PI/180+(Number.isFinite(road.road)?road.angle:0),cols=Math.max(2,Math.min(24,Math.ceil(size/12))),cs=Math.cos(rotation),sn=Math.sin(rotation);
+  if(type==='nature'){const mountain=['bigmountain','smallmountain','snowmountain','rockypeak','rockmass','rock','cliff'].includes(o.type);return W.detail.hierarchy(p,{uid:seed,explicit:true,rock:['rock','rockmass','cliff'].includes(o.type),dead:o.type==='deadtree',x:o.position.x,y:o.position.y,size,layer:mountain?'Mountains':'Vegetation'},z).map(f=>({...f,alpha:weight}));}
+  for(let j=0;j<cols;j++)for(let i=0;i<cols;i++){const r=S.hash(seed,i,j),lx=((i+.3+S.hash(seed,i,j,'x')*.4)/cols-.5)*size*.8,ly=((j+.3+S.hash(seed,i,j,'y')*.4)/cols-.8)*size*.8,childSize=6+r*5;
+   // Leave an axial street; master context stays in the foreground of its footprint.
+   if(type?Math.abs(lx)<size*.07:r<.5||ly<-size*.05)continue;
+   const x=o.position.x+lx*cs-ly*sn,y=o.position.y+lx*sn+ly*cs;if(x<b.x+childSize||x>b.x+b.width-childSize||y<b.y+childSize||y>b.y+b.height-childSize||!W.detail.safe(p,x,y,childSize*.35))continue;
+   let sprite;if(type==='ruin')sprite=[72,73,78,39][Math.floor(r*4)];else if(type==='camp')sprite=32;else if(type==='port')sprite=r>.7?82:[40,41,42][Math.floor(r*3)];else{const biome=p.biomes[W.model.index(p,x,y)];sprite=['mountain','rocky','snow'].includes(biome)?[40,41,99][Math.floor(r*3)]:['forest','conifer','deadforest'].includes(biome)?[40,42,41][Math.floor(r*3)]:[40,41,42,43,99][Math.floor(r*5)];}
+   out.push({uid:seed+':'+i+':'+j,x,y,size:childSize,variant:r,id:sprite,kind:type?'building':'context',angle:rotation,alpha:weight,bounds:{x:x-childSize*.5,y:y-childSize*.8,width:childSize,height:childSize}});
+   if(type)out.push({uid:seed+':path:'+i+':'+j,x:x-cs*childSize*.2,y:y+childSize*.12,size:.5,kind:type==='ruin'?'rubble':'path',length:childSize*.7,angle:rotation,alpha:weight,bounds:{x:x-childSize,y:y-childSize,width:childSize*2,height:childSize*2}});
+  }return out.sort((a,b)=>a.y-b.y||a.x-b.x);
+ }
+ function draw(c,p,o,z,drawObject,stats){if(!S.visible(o,z))return;const w=S.weights(z),type=kind(o),detail=children(p,o,z),alpha=type&&detail.length?1-w.hierarchy:1;if(alpha>0){c.save();c.globalAlpha*=alpha;drawObject(c,o);c.restore();stats.macro++;}for(const f of detail){c.save();c.globalAlpha*=f.alpha;if(f.id!=null){c.translate(f.x,f.y);c.rotate(f.angle||0);W.assets.draw(c,f.id,0,0,f.size,f.variant);}else if(['tree','pine','deadTree'].includes(f.kind))W.detail.tree(c,{...f,alpha:1});else W.detail.primitive(c,f);c.restore();stats.derived++;}}
+ W.settlement={kind,children,draw,masters};
+})(WS);

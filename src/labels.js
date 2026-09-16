@@ -19,6 +19,8 @@
    for(const [dx,dy]of offsets){const pos={x:W.model.clamp(anchor.x+dx,width/2+22,p.width-width/2-22),y:W.model.clamp(anchor.y+dy,30,p.height-35)},box={x:pos.x-width/2,y:pos.y-height/2,w:width,h:height};if(!l.manual&&occupied.some(b=>box.x<b.x+b.w+6&&box.x+box.w+6>b.x&&box.y<b.y+b.h+5&&box.y+box.h+5>b.y))continue;l.position=pos;l.hidden=false;occupied.push(box);placed=true;break;}if(!placed)l.hidden=true;
   }
  }
- function hit(p,point){if(!p.layers.Labels.visible)return null;return [...p.labels].reverse().find(l=>!l.hidden&&Math.abs(l.position.x-point.x)<l.text.length*l.size*.3&&Math.abs(l.position.y-point.y)<l.size);}
- W.labels={create,generate,layout,hit};
+ function hit(p,point,zoom=1){if(!p.layers.Labels.visible)return null;return [...p.labels].reverse().find(l=>visible(l,zoom)&&Math.abs(l.position.x-point.x)<l.text.length*displaySize(l,zoom)*.3&&Math.abs(l.position.y-point.y)<displaySize(l,zoom));}
+ function visible(l,zoom=1){if(W.semantic&&!W.semantic.visible(l,zoom))return false;if(l.manual)return true;return !l.hidden;}
+ function displaySize(l,zoom=1){return l.manual?l.size:l.size/Math.max(1,Math.pow(zoom,.7));}
+ W.labels={create,generate,layout,hit,visible,displaySize};
 })(WS);

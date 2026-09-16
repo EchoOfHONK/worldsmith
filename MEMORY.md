@@ -37,8 +37,19 @@
 
 ## Evidence and current limits
 
-- 2026-09-15: `npm test` passed 24 model/editor checks and 2 render-service lifecycle checks. It rewrites the demo JSON as a side effect.
+- 2026-09-16: `npm test` passed 24 model/editor, 2 render-service lifecycle and 14 semantic checks. It rewrites the demo JSON as a side effect.
 - Current browser evidence and unconfirmed checks are in `VALIDATION.md`. Earlier copied reports do not certify this revision. Stable 60 FPS and absence of whole-process memory growth remain unverified.
 - Standalone bundled Playwright Chromium works in the Windows workspace; the earlier launch restriction was environment-specific. Tests accept WORLDSMITH_BASE_URL for an alternate server port. Run timing benchmarks separately from rendering/export workloads.
 
 - Worker font loader must be named loadFonts: a top-level fonts function shadows WorkerGlobalScope.fonts and breaks PNG export. Browser export coverage guards this.
+
+## Semantic zoom
+
+- Logical `semanticZoom` is independent of physical raster resolution and is included in viewport cache keys. Cross-fades are centralized in `render-config.js` / `semantic-lod.js`; DPR and quality never seed content.
+- `world-detail.js` owns bounded material patches, path context and parent-relative peak/tree children. `settlement-detail.js` owns render-only POI children. These are never persisted as editable objects. The worker imports the same modules as the main page.
+- v2 gains defaulted `detailModel:{version:1,salt:"worldsmith"}` plus optional importance/zoom ranges on objects and labels. Width, height, cell size and original geometry stay unchanged. Unsupported detail versions fail validation rather than silently reshuffling content.
+- Generated road endpoints must copy POI coordinates, not share their mutable position objects. The local worker-update test exposed this aliasing; a focused regression guards it.
+- Object-only edits patch the old/new footprint union; they must not invalidate the global path context. Terrain edits retain bounded coast/terrain padding. Main/worker feature identities are tested after object movement.
+- Deep Zoom exports stream 512-square WebP tiles with separate pixel-coordinate vectors through `deep-zoom.js`; File System Access UI lives in `semantic-ui.js`. Full recommended ElderMar top extent is 28,800×19,200, not a resized authoritative project or giant canvas. Partial coverage and incomplete exports are explicitly marked.
+- Runtime source ratios above 1.35 trigger warnings; custom and unsupported artwork remains finite. Counts in the debug panel are chunk draw counts, not unique entity counts. See SEMANTIC_ZOOM.md and VALIDATION.md before making quality/performance claims.
+- Cached semantic fade variants must be deduplicated by physical tile during fallback composition. Drawing every variant repeatedly caused measurable zoom stalls; the isolated five-minute repeat after deduplication is recorded in VALIDATION.md.

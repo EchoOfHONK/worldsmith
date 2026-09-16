@@ -108,7 +108,17 @@ const metadata={
  "assets/fonts/font-7.woff2":{"group":"Fonts and licenses","purpose":"Bundled font subset; family/range mapping in assets/fonts/fonts.css","anchors":[]},
  "assets/fonts/font-8.woff2":{"group":"Fonts and licenses","purpose":"Bundled font subset; family/range mapping in assets/fonts/fonts.css","anchors":[]},
  "assets/fonts/font-9.woff2":{"group":"Fonts and licenses","purpose":"Bundled font subset; family/range mapping in assets/fonts/fonts.css","anchors":[]},
- "assets/fonts/fonts.css":{"group":"Fonts and licenses","purpose":"Bundled font-face declarations and Unicode subsets","anchors":["@font-face"]}
+ "assets/fonts/fonts.css":{"group":"Fonts and licenses","purpose":"Bundled font-face declarations and Unicode subsets","anchors":["@font-face"]},
+ "src/semantic-lod.js":{"group":"Application modules","purpose":"Centralized logical bands, deterministic identity and visibility helpers","anchors":["function weights","function id"]},
+ "src/world-detail.js":{"group":"Application modules","purpose":"Bounded material patches, path context and parent-relative nature children","anchors":["function materials","function hierarchy","function invalidate"]},
+ "src/settlement-detail.js":{"group":"Application modules","purpose":"Render-only POI decompositions and master context","anchors":["function children","function draw"]},
+ "src/deep-zoom.js":{"group":"Application modules","purpose":"Streamed tile pyramid, affected coordinates, manifest and vector serialization","anchors":["function manifest","function affectedTiles","async function exportProject"]},
+ "src/semantic-ui.js":{"group":"Application modules","purpose":"Visibility controls and folder-based deep zoom export with cancellation","anchors":[]},
+ "SEMANTIC_ZOOM.md":{"group":"Guidance and project entry files","purpose":"Semantic zoom architecture, implementation split and source limitations","anchors":[]},
+ "tests-semantic.cjs":{"group":"Guidance and project entry files","purpose":"Deterministic detail, mask, migration and tile coverage checks","anchors":[]},
+ "tests-semantic-render.cjs":{"group":"Guidance and project entry files","purpose":"DPR1/2 inspection screenshots, semantic seams, edge energy and pyramid evidence","anchors":[]},
+ "tests-deep-zoom.cjs":{"group":"Guidance and project entry files","purpose":"Full tile package, exact WebP dimensions and failed-export manifest checks","anchors":[]},
+ "tests-local-render.cjs":{"group":"Guidance and project entry files","purpose":"Object-local invalidation, worker identity and explicit source warnings","anchors":[]}
 };
 const files=[...new Set(cp.execFileSync('git',['ls-files','--cached','--others','--exclude-standard','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(f=>f&&fs.existsSync(path.join(root,f))))].sort();
 const current=fs.readFileSync(path.join(root,'CONTENTS.md'),'utf8');

@@ -29,3 +29,13 @@ Statuses: **Open** = unresolved; **Implemented / verify** = code exists, accepta
 
 | D05 | PNG export fails because a worker helper shadows self.fonts — **Verified fix** | Rename fonts helper to loadFonts; new real-browser import and 2K/4K/8K export checks cover this path. |
 | D06 | Documented inventory generator missing from Git — **Verified fix** | Restored scripts/update-contents.cjs; generation and --check verify all 107 Git-visible files and entry anchors. |
+
+## Semantic zoom follow-up (2026-09-15)
+
+| ID | Finding and status | Prevention / evidence |
+| --- | --- | --- |
+| P09 | Deep zoom enlarged macro collage without new local information — **Verified implementation; art limits remain** | Shared semantic bands, parent children, world-lattice materials and structured-path detail. `tests-semantic-render.cjs` measures feature IDs/counts and gradient energy, checks five scene classes across four zooms and captures DPR 1/2. See L03 and visual qualifications in VALIDATION.md. |
+| D07 | Generated road endpoints shared mutable POI positions, causing main/worker divergence on object edits — **Verified fix** | Copy endpoints in generator route output. Model alias regression and `test:local-render` confirm independent geometry and matching post-move child identities. |
+| D08 | Cached semantic variants were repeatedly overdrawn during continuous zoom — **Verified fix** | Deduplicate fallback images by physical tile in viewport-renderer. Isolated 300-second repeat: zoom p95 33.4 ms, versus 166.7 ms before the fix; cache remains bounded. |
+| L03 | Some special props, large masters and custom images still exceed source detail — **Explicit limitation** | Worker records requested/native ratio and fallback IDs; UI and package manifest disclose limits. Test deliberately oversized statue to verify warning. More faithful artwork or a type-specific decomposition is required for those types. |
+| L04 | Full recommended deep-zoom package can be large and slow — **Explicit limitation** | Sequential worker tiles, progress/cancel, `complete:false` on interruption, exact coverage and source-limit metadata. No giant intermediate canvas. Current exporter rebuilds requested tiles; it does not yet reuse an existing package incrementally. |

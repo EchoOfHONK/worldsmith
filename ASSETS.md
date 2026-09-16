@@ -40,3 +40,8 @@ Cormorant Garamond and Manrope are bundled locally in `assets/fonts`. Their SIL 
 - assets/master-temple.png — собор; точный промпт assets/master-temple-prompt.txt.
 
 Файлы master-*-data.js — встроенные копии оригиналов. Всего 108 исходных рисованных элементов и 104 конфигурируемых типа объектов. Мастер-ассеты также заменяют соответствующие старые замок, портовый город, мост и храм на карте. Старые ячейки других атласов остаются примерно 254–312 px: их исходная детализация ограничена. Asset LOD выбирается по физическому размеру на экране, без предварительного сведения объектов в малую общую текстуру. Новая процедурная микрофактура земли находится в terrain-tiles.js и surface.js.
+# Semantic detail reuse
+
+The semantic renderer introduces no new downloaded/generated artwork. It reuses the bundled peak variants (16–23), conifer groups (28–31), small houses/farms/market, ruin fragments, rock (88), oak (92) and dead tree (93) crops at smaller world sizes. Ground chips, grass/reeds, roots/logs, snow breaks, water marks and path detail are local vector primitives. Original licenses/provenance below still apply.
+
+Ordinary source crops remain about 311–313 px; landmark crops and 1254-pixel masters retain their existing finite sizes. The render worker measures source demand. Supported parent groups cross-fade into smaller children; unsupported landmarks, excessive instance scales and custom assets retain a visible source-limit warning. No upscaling claim is made. See [SEMANTIC_ZOOM.md](SEMANTIC_ZOOM.md).

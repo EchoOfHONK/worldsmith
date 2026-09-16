@@ -5,10 +5,13 @@
   "description": "Illustrated fantasy atlas generator and editor",
   "scripts": {
     "start": "node server.cjs",
-    "test": "node tests.cjs && node tests-render-service.cjs",
+    "test": "node tests.cjs && node tests-render-service.cjs && node tests-semantic.cjs",
     "fonts": "node scripts/bundle-fonts.cjs",
     "test:render": "node tests-render.cjs",
     "test:performance": "node tests-performance.cjs",
-    "test:world-render": "node tests-world-render.cjs"
+    "test:world-render": "node tests-world-render.cjs",
+    "test:semantic-render": "node tests-semantic-render.cjs",
+    "test:deep-zoom": "node tests-deep-zoom.cjs",
+    "test:local-render": "node tests-local-render.cjs"
   }
 }

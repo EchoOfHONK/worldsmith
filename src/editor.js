@@ -12,7 +12,7 @@
   undo(){if(!this.history.length)return;const record=this.history.pop();if(typeof record==='string'){this.future.push(JSON.stringify(this.project));this.project=JSON.parse(record);}else{this.future.push(record);this.applyStroke(record,'before');}this.selectedId=null;this.dirty=true;this.draw();this.changed('project');}
   redo(){if(!this.future.length)return;const record=this.future.pop();if(typeof record==='string'){this.history.push(JSON.stringify(this.project));this.project=JSON.parse(record);}else{this.history.push(record);this.applyStroke(record,'after');}this.trimHistory();this.selectedId=null;this.dirty=true;this.draw();this.changed('project');}
   changed(kind='data'){this.onChange?.(this,kind);}
-  draw(rect){W.custom?.activate(this.project);W.surface?.invalidate(this.project,rect);W.scene?.invalidate(this.project,rect);this.view?.invalidate(rect);}
+  draw(rect){W.custom?.activate(this.project);if(this.view)this.view.invalidate(rect);else{W.surface?.invalidate(this.project,rect);W.scene?.invalidate(this.project,rect);}}
   schedule(){if(this.pending)return;this.pending=requestAnimationFrame(()=>{this.pending=null;this.draw();});}
   transform(){this.view?.camera();}
   mergeDirty(pos){const r={x:pos.x-this.radius,y:pos.y-this.radius,width:this.radius*2,height:this.radius*2};if(!this.brushRect)this.brushRect=r;else{const b=this.brushRect,x=Math.min(b.x,r.x),y=Math.min(b.y,r.y);this.brushRect={x,y,width:Math.max(b.x+b.width,r.x+r.width)-x,height:Math.max(b.y+b.height,r.y+r.height)-y};}}
@@ -35,7 +35,7 @@
     if(e.button===1||this.space||this.tool==='pan'){this.drag={kind:'pan',x:e.clientX,y:e.clientY,offset:{...this.offset}};return;}
     if(e.button!==0||!this.inside(pos))return;
     if(this.tool==='select'||this.tool==='label'){
-     let obj=this.tool==='label'?W.labels.hit(this.project,pos):W.objects.hit(this.project,pos);this.selectedId=obj?.id||null;
+     let obj=this.tool==='label'?W.labels.hit(this.project,pos,this.zoom):W.objects.hit(this.project,pos,this.zoom);this.selectedId=obj?.id||null;
      if(!obj&&this.tool==='label'&&this.editable('Labels')){this.snapshot();obj=W.labels.create('Новая область',pos,'region');obj.manual=true;this.project.labels.push(obj);this.selectedId=obj.id;}
      if(obj&&this.editable(obj.kind?'Labels':obj.layer))this.drag={kind:obj.kind?'label':'object',object:obj,start:pos,origin:{...obj.position},saved:false};this.view.labelRevision=-1;this.view.request();this.changed('selection');return;
     }
