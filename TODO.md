@@ -1,5 +1,9 @@
 # Work queue
 
+## Publish latest fixes
+
+- [x] Push the verified local main commits to origin/main and verify the remote head matches.
+
 ## v0.7 — continuous world composition
 
 - [x] Read the supplied reference and current generation/render path; baseline: 43 checks pass.
@@ -28,4 +32,4 @@
 - 57 automated checks pass; focused atlas, continuity, local-edit, full PNG/custom-asset regression, optional tile export and fresh-generation suites pass. Final isolated 300-second stress run passed without errors.
 - Earlier 800% work supplied the deterministic detail/worker foundation; that product target is superseded by v0.6. Macro decomposition is dormant; the optional tile profile now stops at logical 2×.
 - Screen cache budget is 128 MiB, down from 192. Timings and limitations are in VALIDATION.md; do not treat every performance metric as improved.
-- Commit status lives in Git history. Push is not part of this request.
+- Commit and publication status live in Git history; the user authorized publishing the latest fixes.
