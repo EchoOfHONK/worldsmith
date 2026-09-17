@@ -5,7 +5,7 @@
   for(const r of p.regions)add(r.name,r.position,'region','label-'+r.id);
   for(const o of p.objects)if(o.layer!=='Decorations'&&!['bridge','ford'].includes(o.type)){const l=add(o.name,{x:o.position.x,y:o.position.y+20},'poi','label-'+o.id);l.objectId=o.id;}
   for(const r of p.rivers.slice(0,7)){const pt=r.points[Math.floor(r.points.length*.6)];if(pt)add(r.name,{x:pt.x+16,y:pt.y},'river','label-'+r.id);}
-  for(const [biome,text,kind]of [['mountain','СЕДЫЕ ХРЕБТЫ','mountain'],['snow','КОРОНА СЕВЕРА','mountain'],['forest','ШЕПЧУЩАЯ ЧАЩА','forest'],['swamp','ТОПИ ЗАБВЕНИЯ','forest']]){const ids=p.biomes.map((b,i)=>b===biome?i:-1).filter(i=>i>=0);if(ids.length>150){const i=ids[Math.floor(ids.length*.4)];add(text,{x:(i%p.cols)*5,y:Math.floor(i/p.cols)*5},kind,'label-'+biome);}}
+  for(const [biome,text,kind]of [['mountain','СЕДЫЕ ХРЕБТЫ','mountain'],['snow','КОРОНА СЕВЕРА','mountain'],['forest','ШЕПЧУЩАЯ ЧАЩА','forest'],['swamp','ТОПИ ЗАБВЕНИЯ','forest']]){if(p.regions.some(r=>r.name===text))continue;const ids=p.biomes.map((b,i)=>b===biome?i:-1).filter(i=>i>=0);if(ids.length>150){const i=ids[Math.floor(ids.length*.4)];add(text,{x:(i%p.cols)*5,y:Math.floor(i/p.cols)*5},kind,'label-'+biome);}}
   layout(p);
  }
  function layout(p){

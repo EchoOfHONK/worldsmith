@@ -1,6 +1,6 @@
 // All world rasterization runs off the UI thread. Main thread owns the camera.
 self.window=self;self.document={createElement:()=>new OffscreenCanvas(1,1)};
-importScripts('config.js','catalog.js','render-config.js','semantic-lod.js','random.js','objects.js','model.js','labels.js','placement.js','generator.js','surface.js','world-scene.js','coast.js','terrain-tiles.js','atlas-style.js','world-detail.js','settlement-detail.js','renderer.js','deep-zoom.js');
+importScripts('config.js','catalog.js','render-config.js','semantic-lod.js','random.js','objects.js','model.js','labels.js','placement.js','world-layout.js','generator.js','surface.js','world-scene.js','coast.js','terrain-tiles.js','atlas-style.js','world-detail.js','settlement-detail.js','renderer.js','deep-zoom.js');
 WS.config.render.terrain.maxTiles=WS.config.render.worldChunks.workerTerrainTiles;
 let sourceStats={worstSourceRatio:0,sourceLimited:0,fallbackAssets:[]};function track(c,width,native,id){const t=c.getTransform(),ratio=width*Math.hypot(t.a,t.b)/native;sourceStats.worstSourceRatio=Math.max(sourceStats.worstSourceRatio,ratio);if(ratio>WS.semantic.cfg.maxAtlasRatio){sourceStats.sourceLimited++;if(!sourceStats.fallbackAssets.some(a=>a.id===id))sourceStats.fallbackAssets.push({id,ratio,native,requested:width*Math.hypot(t.a,t.b)});}}
 const sources=[],custom=new Map();let project=null,revision=0,draws=0;

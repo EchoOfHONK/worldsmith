@@ -57,7 +57,7 @@
    Rivers(){W.coast.rivers(c,p,rect,line);metrics.paths+=W.detail?.drawPaths(c,p,rect,semanticZoom,'river')||0;},
    Mountains(){drawHierarchy('Mountains');},
    Vegetation(){drawHierarchy('Vegetation');},
-   Roads(){for(const r of p.roads){c.setLineDash([]);line(c,r,'#383f2933',r.width+2);line(c,r,'#a9956db0',r.width+.4);line(c,r,'#d4c29980',r.width*.32);c.setLineDash([]);}metrics.paths+=W.detail?.drawPaths(c,p,rect,semanticZoom,'road')||0;},
+   Roads(){for(const r of p.roads){c.setLineDash([]);line(c,r,'#47492e38',r.width+2);line(c,r,r.condition==='overgrown'?'#9a96776b':r.kind==='trail'?'#ad9a777d':'#b09b73b0',r.width+.4);if(r.kind!=='trail')line(c,r,'#c8b48e33',r.width*.32);c.setLineDash([]);}metrics.paths+=W.detail?.drawPaths(c,p,rect,semanticZoom,'road')||0;},
    Structures(){for(const o of W.scene.objects(p,rect,'Structures'))drawPOI(o);},
    POI(){for(const o of W.scene.objects(p,rect,'POI'))drawPOI(o);},
    Decorations(){for(const o of W.scene.objects(p,rect,'Decorations'))drawPOI(o);},

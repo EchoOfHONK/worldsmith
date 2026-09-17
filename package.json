@@ -1,11 +1,11 @@
 {
   "name": "worldsmith",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "description": "Illustrated fantasy atlas generator and editor",
   "scripts": {
     "start": "node server.cjs",
-    "test": "node tests.cjs && node tests-render-service.cjs && node tests-semantic.cjs",
+    "test": "node tests.cjs && node tests-render-service.cjs && node tests-semantic.cjs && node tests-continuity.cjs",
     "fonts": "node scripts/bundle-fonts.cjs",
     "test:render": "node tests-render.cjs",
     "test:performance": "node tests-performance.cjs",
@@ -13,6 +13,7 @@
     "test:semantic-render": "node tests-semantic-render.cjs",
     "test:deep-zoom": "node tests-deep-zoom.cjs",
     "test:local-render": "node tests-local-render.cjs",
-    "test:atlas-generation": "node tests-atlas-generation.cjs"
+    "test:atlas-generation": "node tests-atlas-generation.cjs",
+    "test:continuity-render": "node tests-continuity-render.cjs"
   }
 }

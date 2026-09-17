@@ -3,6 +3,7 @@
   const fail=()=>{throw new Error('Файл повреждён или имеет неподдерживаемый формат');};
   if(!input||![1,2].includes(input.version)||!Number.isInteger(input.width)||!Number.isInteger(input.height)||input.width<300||input.height<300||input.width>W.config.maxSize||input.height>W.config.maxSize)fail();
   let p;try{p=W.model.migrate(input);}catch{fail();}
+  if(!W.worldLayout.validate(p.worldLayout,p))fail();
   if(!p.detailModel||p.detailModel.version!==1||typeof p.detailModel.salt!=='string'||p.detailModel.salt.length>100)fail();for(const o of [...(p.objects||[]),...(p.labels||[])]){if(o.importance!==undefined&&(!Number.isFinite(o.importance)||o.importance<0||o.importance>100))fail();for(const k of ['minZoom','maxZoom'])if(o[k]!==undefined&&(!Number.isFinite(o[k])||o[k]<0||o[k]>64))fail();if((o.minZoom??0)>(o.maxZoom??64))fail();}W.custom?.validate(p.customAssets);const customIds=new Set((p.customAssets||[]).map(d=>d.id));
   const N=Math.ceil(p.width/5)*Math.ceil(p.height/5),point=a=>a&&Number.isFinite(a.x)&&Number.isFinite(a.y)&&a.x>=0&&a.y>=0&&a.x<=p.width&&a.y<=p.height;
   if(p.cellSize!==5||p.cols!==Math.ceil(p.width/5)||p.rows!==Math.ceil(p.height/5)||typeof p.seed!=='string'||typeof p.title!=='string'||!Number.isFinite(p.seaLevel)||p.seaLevel<=0||p.seaLevel>=1)fail();

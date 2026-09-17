@@ -1,8 +1,8 @@
-# Focused atlas rendering — v0.6
+# Focused atlas rendering — v0.7
 
 ## Product policy
 
-The focused visual request supersedes the former 800% goal. Camera maximum is 2×; existing minimum/fit behavior is preserved except the maximum clamp. Buttons expose 50/100/150/200%. Project coordinates, v1/v2 loading, POI anchors, editing and PNG exports are preserved. The original first reference image is absent from this repository; visual review uses the user's written direction and before/after ElderMar images, not an asserted exact match.
+The focused visual request supersedes the former 800% goal. Camera maximum is 2×; existing minimum/fit behavior is preserved except the maximum clamp. Buttons expose 50/100/150/200%. Project coordinates, v1/v2 loading, POI anchors, editing and PNG exports are preserved. The reference was supplied for v0.7. Global generation now follows the staged composition described in [WORLD_LAYOUT.md](WORLD_LAYOUT.md); existing saves retain their world data. Visual likeness is reviewed rather than assumed.
 
 ## Stable composition and cache
 
@@ -20,7 +20,7 @@ Viewport cache keys use physical raster LOD, mode, texture, quality, atlas rende
 
 ## Export and compatibility
 
-PNG 2K/4K/8K remains supported. Optional 512px WebP tile export is retained with max logical zoom 2 and default DPR 2 (7200×4800 top extent for an 1800×1200 map). It is secondary to the editor. Manifest renderModel is atlas-v6 and cache algorithm 2, distinguishing the new rendering from old packages. Labels/vectors remain separate. Incremental package reuse is still not implemented.
+PNG 2K/4K/8K remains supported. Optional 512px WebP tile export is retained with max logical zoom 2 and default DPR 2 (7200×4800 top extent for an 1800×1200 map). It is secondary to the editor. Manifest renderModel is atlas-v7 and cache algorithm 3, distinguishing the new rendering from old packages. Labels/vectors remain separate. Incremental package reuse is still not implemented.
 
 Saved project schema remains v2 with existing detailModel defaults. Existing visibility ranges are preserved, including ranges outside the new camera range; users can edit them in the inspector. Finite custom/master/source warnings remain. No artwork can promise unlimited source resolution; Ultra or oversized custom objects may still exceed the budget.
 

@@ -48,4 +48,8 @@ Ordinary source crops remain about 311–313 px; landmark crops and 1254-pixel m
 
 ## v0.6 atlas compositing
 
-No new bitmap artwork was introduced. The worker prepares source-sized alpha feathers for the lower edges of mountain and forest cells to blend their flat bases into the terrain. Source resolution is unchanged. Ground pools, material strokes, shadows and POI footing are procedural Canvas layers. Existing masters and custom images keep their native-resolution warnings. Original reference pixels are unavailable in this repository, so exact reference matching is not claimed.
+No new bitmap artwork was introduced. The worker prepares source-sized alpha feathers for the lower edges of mountain and forest cells to blend their flat bases into the terrain. Source resolution is unchanged. Ground pools, material strokes, shadows and POI footing are procedural Canvas layers. Existing masters and custom images keep their native-resolution warnings. The reference was supplied for v0.7; no reference pixels were copied into the assets. Exact visual matching is not claimed.
+
+## v0.7 atlas cell isolation
+
+No new bitmap artwork. Some mountain drawings cross the details.png cell boundary into the forest row. Runtime preparation removes detached alpha components touching the top edge when they occupy less than 10% of the crop and end above 18% of its height. Large connected silhouettes are retained. This fixes repeated white strips, not source resolution. Preparation uses the native crop dimensions; the original bundled PNGs remain unchanged. The same helper serves main-thread previews and the render worker.

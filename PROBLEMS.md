@@ -34,7 +34,7 @@ Statuses: **Open** = unresolved; **Implemented / verify** = code exists, accepta
 
 | ID | Finding and status | Prevention / evidence |
 | --- | --- | --- |
-| P09 | Deep zoom enlarged macro collage without new local information — **Verified implementation; art limits remain** | Shared semantic bands, parent children, world-lattice materials and structured-path detail. `tests-semantic-render.cjs` measures feature IDs/counts and gradient energy, checks five scene classes across four zooms and captures DPR 1/2. See L03 and visual qualifications in VALIDATION.md. |
+| P09 | Deep zoom enlarged macro collage without new local information — **Verified implementation; art limits remain** | Shared semantic bands, parent children, world-lattice materials and structured-path detail. The historical deep-zoom browser suite measured feature IDs/counts and gradient energy. The current suite follows the superseding 200% target. See L03 and visual qualifications in VALIDATION.md. |
 | D07 | Generated road endpoints shared mutable POI positions, causing main/worker divergence on object edits — **Verified fix** | Copy endpoints in generator route output. Model alias regression and `test:local-render` confirm independent geometry and matching post-move child identities. |
 | D08 | Cached semantic variants were repeatedly overdrawn during continuous zoom — **Verified fix** | Deduplicate fallback images by physical tile in viewport-renderer. Isolated 300-second repeat: zoom p95 33.4 ms, versus 166.7 ms before the fix; cache remains bounded. |
 | L03 | Some special props, large masters and custom images still exceed source detail — **Explicit limitation** | Worker records requested/native ratio and fallback IDs; UI and package manifest disclose limits. Test deliberately oversized statue to verify warning. More faithful artwork or a type-specific decomposition is required for those types. |
@@ -45,4 +45,12 @@ Statuses: **Open** = unresolved; **Implemented / verify** = code exists, accepta
 | ID | Finding and status | Prevention / evidence |
 | --- | --- | --- |
 | P10 | Extreme zoom displaced the goal of a cohesive fantasy atlas — **Verified scope; artistic/FPS acceptance qualified** | Cap camera at 2×, stable macro composition, richer terrain/forest/ridge grouping, feathered bases, smooth rivers and continuous paths. Focused browser captures and cache invariants cover 50/100/150/200%; see VALIDATION.md. The former P09 extreme-zoom target is superseded. |
-| L05 | The original first reference image is unavailable — **Reference limitation** | Repository contains demo exports, not the reference. Work follows the user's written art direction. Exact likeness requires the original image; do not claim it from generated screenshots. |
+| L05 | Original reference unavailable during v0.6 — **Resolved input limitation** | User supplied the image on 2026-09-17 for v0.7. Historical v0.6 likeness claims remain qualified. |
+
+## v0.7 world continuity
+
+| ID | Finding and status | Prevention / evidence |
+| --- | --- | --- |
+| P11 | World feels assembled from unrelated pieces — **Verified continuity; artistic limits remain** | Global world-layout phases, broad region masks, graded valley, focal-site scoring and meaningful connectivity. New model and five-habitat render checks; see WORLD_LAYOUT.md and VALIDATION.md. |
+| D09 | Snow from the preceding atlas row appears as white horizontal strips above forest sprites — **Verified source-preparation fix** | Native-size alpha component cleanup shared by preview/worker. Keep both whole/split tests and actual source/visual inspection: partition equality alone misses this defect. |
+| D10 | Waterfall/rock decoration could cover castle roofs despite distinct anchors — **Verified placement fix** | Generation now uses the same rotated illustration bounds as scene culling. All routes/crossings precede local decoration; full-footprint clearance and frontier screenshots guard the fix. |

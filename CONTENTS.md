@@ -28,6 +28,7 @@ Entry points below show literal search anchors and their current first matching 
 | [SEMANTIC_ZOOM.md](SEMANTIC_ZOOM.md) | Focused atlas architecture, compatibility and source limitations | — |
 | [TODO.md](TODO.md) | Current request, unfinished acceptance work and next actions | — |
 | [VALIDATION.md](VALIDATION.md) | Confirmed checks, missing evidence and environment limits | — |
+| [WORLD_LAYOUT.md](WORLD_LAYOUT.md) | Global composition phases, chunk invariants and artistic limits | — |
 | [demo-atlas.png](demo-atlas.png) | Bundled illustrated demo export with cartography | — |
 | [demo-clean.png](demo-clean.png) | Bundled demo export without cartographic framing | — |
 | [demo.world.json](demo.world.json) | Generated default demo world; refreshed by npm test | — |
@@ -38,6 +39,8 @@ Entry points below show literal search anchors and their current first matching 
 | [server.cjs](server.cjs) | Static HTTP server; port and network binding | `http.createServer` (3) |
 | [style.css](style.css) | Editor layout, typography, controls and map styling | `:root` (2) |
 | [tests-atlas-generation.cjs](tests-atlas-generation.cjs) | Worker generation, landmark access trails and focused visual captures | — |
+| [tests-continuity-render.cjs](tests-continuity-render.cjs) | Five habitats, four zooms and unequal six-way pixel/identity comparisons | — |
+| [tests-continuity.cjs](tests-continuity.cjs) | Composition, habitats, connectivity, atlas isolation and partition identity regressions | — |
 | [tests-deep-zoom.cjs](tests-deep-zoom.cjs) | Full tile package, exact WebP dimensions and failed-export manifest checks | — |
 | [tests-local-render.cjs](tests-local-render.cjs) | Object-local invalidation, worker identity and explicit source warnings | — |
 | [tests-performance.cjs](tests-performance.cjs) | Five-minute Playwright timing/cache/heap workload | `const duration=` (4) |
@@ -63,12 +66,12 @@ Entry points below show literal search anchors and their current first matching 
 | [src/deep-zoom.js](src/deep-zoom.js) | Streamed tile pyramid, affected coordinates, manifest and vector serialization | `function manifest` (4); `function affectedTiles` (3); `async function exportProject` (11) |
 | [src/editor.js](src/editor.js) | Input gestures, camera, selection and transactional undo | `class Editor` (2); `beginStroke(){` (7); `endStroke(){` (10); `queuePaint(` (19); `flushPaint(){` (20); `bind(){` (30) |
 | [src/generator-worker.js](src/generator-worker.js) | Background generation and progress message entry | `onmessage` (3) |
-| [src/generator.js](src/generator.js) | Global geography, drainage, climate, populations and routes | `function generate` (10); `function route` (103) |
+| [src/generator.js](src/generator.js) | Global geography, drainage, climate, populations and routes | `function generate` (10); `function route` (114) |
 | [src/icons.js](src/icons.js) | Inline SVG UI icon renderer | `W.icon=` (3) |
 | [src/labels.js](src/labels.js) | Label creation, generation, layout and hit detection | `function create` (2); `function generate` (3); `function layout` (11); `function hit` (22) |
 | [src/library-ui.js](src/library-ui.js) | Asset catalog, previews, import form and custom metadata editing | `function refresh` (14); `function preview` (15); `function draft` (16); `function drawDraft` (17) |
 | [src/model.js](src/model.js) | World creation, cell indexing and v1 migration | `function create` (4); `function migrate` (6); `W.model=` (7) |
-| [src/objects.js](src/objects.js) | Object creation, metadata and hit detection | `W.objects=` (2) |
+| [src/objects.js](src/objects.js) | Object creation, shared illustration bounds, metadata and hit detection | `function bounds` (2); `W.objects=` (3) |
 | [src/performance-ui.js](src/performance-ui.js) | Opt-in rendering diagnostic overlay | `function tick` (3); `W.performanceUI=` (5) |
 | [src/placement.js](src/placement.js) | Biome/coast eligibility and additional object placement | `function eligible` (3); `function enrich` (5) |
 | [src/quality-ui.js](src/quality-ui.js) | Preview/export quality controls and source-resolution feedback | `function dimensions` (6); `function sourceQuality` (9); `W.qualityUI=` (10) |
@@ -80,14 +83,15 @@ Entry points below show literal search anchors and their current first matching 
 | [src/semantic-lod.js](src/semantic-lod.js) | Centralized logical bands, deterministic identity and visibility helpers | `function weights` (4); `function id` (6) |
 | [src/semantic-ui.js](src/semantic-ui.js) | Visibility controls and folder-based deep zoom export with cancellation | — |
 | [src/settlement-detail.js](src/settlement-detail.js) | POI illustration integration and dormant legacy decomposition | `function children` (5); `function draw` (16) |
-| [src/storage.js](src/storage.js) | Project validation, JSON save/load and banded PNG export | `function validate` (2); `function json` (22); `function png` (25); `W.storage=` (26) |
+| [src/storage.js](src/storage.js) | Project validation, JSON save/load and banded PNG export | `function validate` (2); `function json` (23); `function png` (26); `W.storage=` (27) |
 | [src/surface.js](src/surface.js) | Smoothed elevation field and world-space surface microdetails | `function heightField` (3); `function details` (5); `W.surface=` (6) |
 | [src/terrain-tiles.js](src/terrain-tiles.js) | Terrain/water/relief tile generation and chained cache invalidation | `function update` (4); `function tile` (7); `function render` (16); `const previous=` (17) |
 | [src/tooltips.js](src/tooltips.js) | Tooltip interaction and positioning | `(function` (1) |
 | [src/ui.js](src/ui.js) | Application bootstrap, panels, settings and Generate/Save/Load bindings | `const editor=` (9); `function refresh` (21); `function generate` (38); `function buildThumbnails` (51) |
 | [src/viewport-renderer.js](src/viewport-renderer.js) | Visible chunk cache, camera composition, SVG labels and debug guides | `class ViewportRenderer` (3); `waitReady(){` (5); `invalidate(rect)` (8); `render(now` (15); `labels(p` (26); `guides(p` (26) |
 | [src/world-detail.js](src/world-detail.js) | Bounded material patches, shared path context and dormant legacy hierarchy | `function materials` (22); `function hierarchy` (39); `function invalidate` (45) |
-| [src/world-scene.js](src/world-scene.js) | Spatial grid, sprite bounds and deterministic forest/mountain blocks | `function bounds` (4); `class Grid` (5); `function block` (11); `function sprites` (19); `W.scene=` (20) |
+| [src/world-layout.js](src/world-layout.js) | Seeded global composition, character regions, coherent drainage basins and contextual routes | `function create` (12); `function sample` (22); `function site` (56); `function crossings` (68) |
+| [src/world-scene.js](src/world-scene.js) | Spatial grid, sprite bounds and deterministic forest/mountain blocks | `const bounds` (4); `class Grid` (5); `function block` (11); `function sprites` (19); `W.scene=` (20) |
 
 ## Maintenance scripts
 
@@ -162,4 +166,4 @@ Entry points below show literal search anchors and their current first matching 
 | [assets/fonts/font-9.woff2](assets/fonts/font-9.woff2) | Bundled font subset; family/range mapping in assets/fonts/fonts.css | — |
 | [assets/fonts/fonts.css](assets/fonts/fonts.css) | Bundled font-face declarations and Unicode subsets | `@font-face` (2) |
 
-Total: **119 files**.
+Total: **123 files**.

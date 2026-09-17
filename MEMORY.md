@@ -29,7 +29,7 @@
 
 ## Data and assets
 
-- App package version is `0.6.0`; saved-world schema remains v2. `storage.js` validates data and `model.js` migrates v1. See `DATA_FORMAT.md`.
+- App package version is `0.7.0`; saved-world schema remains v2. `storage.js` validates data and `model.js` migrates v1. See `DATA_FORMAT.md`.
 - Grid cells are 5 world pixels. Custom dimensions are 300–3200 on each side. Export long edges include 2048/4096/8192 with aspect ratio preserved.
 - Custom PNG/WebP assets live in IndexedDB and are embedded into saved JSON for portability. Validation limits include 100 assets / 30 MB serialized collection and 4096-pixel source sides.
 - The catalog has 104 configured object types; some share artwork. Bundled atlases and four master images have finite source detail. Do not claim that upscaling creates missing detail. Provenance and font licenses are in `ASSETS.md` and `assets/fonts/`.
@@ -37,7 +37,7 @@
 
 ## Evidence and current limits
 
-- 2026-09-16: `npm test` passed 24 model/editor, 2 render-service lifecycle and 17 focused atlas checks. It rewrites the demo JSON as a side effect.
+- 2026-09-17: `npm test` passes 57 checks (24 model/editor, 2 service lifecycle, 17 focused atlas, 14 continuity). It regenerates the canonical demo JSON; v0.7 intentionally updates the bundled demo to the new composition.
 - Current browser evidence and unconfirmed checks are in `VALIDATION.md`. Earlier copied reports do not certify this revision. Stable 60 FPS and absence of whole-process memory growth remain unverified.
 - Standalone bundled Playwright Chromium works in the Windows workspace; the earlier launch restriction was environment-specific. Tests accept WORLDSMITH_BASE_URL for an alternate server port. Run timing benchmarks separately from rendering/export workloads.
 
@@ -50,6 +50,10 @@
 - atlas-style.js supplies cached smooth path geometry, ground overlays, source-sized edge feathers and POI footing. World-scene uses stable coordinate hashes for varied forest/mountain art and clearings. See SEMANTIC_ZOOM.md.
 - Generator road endpoints must copy POI positions rather than share mutable objects. New generation adds short access trails, but old saved worlds are not regenerated.
 - Object-only edits patch old/new footprint union; terrain edits preserve bounded invalidation. Material cache remains 256 patches, worker terrain cache 32 tiles.
-- The optional tile exporter now uses logical maxZoom 2, default DPR 2, renderModel atlas-v6 and cache algorithm 2. ElderMar top extent is 7200×4800. PNG 2K/4K/8K is unchanged.
+- The optional tile exporter now uses logical maxZoom 2, default DPR 2, renderModel atlas-v7 and cache algorithm 3. ElderMar top extent is 7200×4800. PNG 2K/4K/8K is unchanged.
 - Saved schema stays v2 with existing detailModel defaults. Source/master/custom warnings remain; fixed-range rendering does not create pixels missing from source art.
-- First reference image is absent from the repository. Do not claim an exact reference match without obtaining it. Current before/after images and qualified performance results are in VALIDATION.md.
+- The user supplied the reference image on 2026-09-17. v0.7 prioritizes global composition before terrain/POI/detail; see WORLD_LAYOUT.md. Do not claim an exact match to the painting.
+- New worlds have an optional validated worldLayout v1 block: generation provenance only. Existing v1/v2 saves are never regenerated. Six smooth character influences guide global fields; render chunks remain delivery partitions.
+- Detached snow fragments at the top of tree atlas crops caused repeated horizontal strips. atlas-style.removeBleed fixes source preparation in both previews and workers. Whole/split equality alone cannot detect source-art contamination.
+
+- Generator decoration clearance and scene culling share objects.bounds; do not use anchor distance alone to prevent waterfalls/rocks covering tall landmarks. All crossings/access paths are placed before local decoration.

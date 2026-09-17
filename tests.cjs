@@ -1,6 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 global.window=global;
-for(const file of ['config','catalog','random','objects','model','labels','placement','generator','brushes','editor','storage','custom-assets'])vm.runInThisContext(fs.readFileSync(__dirname+'/src/'+file+'.js','utf8'),{filename:file+'.js'});
+for(const file of ['config','catalog','random','objects','model','labels','placement','world-layout','generator','brushes','editor','storage','custom-assets'])vm.runInThisContext(fs.readFileSync(__dirname+'/src/'+file+'.js','utf8'),{filename:file+'.js'});
 let count=0;function test(name,run){run();count++;console.log('PASS '+name);}
 const generate=(seed='quality-test',preset='Classic Fantasy',width=1000,height=700,params)=>WS.generator.generate(seed,width,height,preset,params);
 const p=generate();
