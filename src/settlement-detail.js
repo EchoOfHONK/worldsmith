@@ -13,6 +13,6 @@
    if(type)out.push({uid:seed+':path:'+i+':'+j,x:x-cs*childSize*.2,y:y+childSize*.12,size:.5,kind:type==='ruin'?'rubble':'path',length:childSize*.7,angle:rotation,alpha:weight,bounds:{x:x-childSize,y:y-childSize,width:childSize*2,height:childSize*2}});
   }return out.sort((a,b)=>a.y-b.y||a.x-b.x);
  }
- function draw(c,p,o,z,drawObject,stats){if(!S.visible(o,z))return;const w=S.weights(z),type=kind(o),detail=children(p,o,z),alpha=type&&detail.length?1-w.hierarchy:1;if(alpha>0){c.save();c.globalAlpha*=alpha;drawObject(c,o);c.restore();stats.macro++;}for(const f of detail){c.save();c.globalAlpha*=f.alpha;if(f.id!=null){c.translate(f.x,f.y);c.rotate(f.angle||0);W.assets.draw(c,f.id,0,0,f.size,f.variant);}else if(['tree','pine','deadTree'].includes(f.kind))W.detail.tree(c,{...f,alpha:1});else W.detail.primitive(c,f);c.restore();stats.derived++;}}
+ function draw(c,p,o,z,drawObject,stats){if(!S.visible(o,z))return;const w=S.weights(z),type=kind(o),detail=children(p,o,z),alpha=type&&detail.length?1-w.hierarchy:1;if(alpha>0){W.atlas?.footing(c,p,o);c.save();c.globalAlpha*=alpha;drawObject(c,o);c.restore();stats.macro++;}for(const f of detail){c.save();c.globalAlpha*=f.alpha;if(f.id!=null){c.translate(f.x,f.y);c.rotate(f.angle||0);W.assets.draw(c,f.id,0,0,f.size,f.variant);}else if(['tree','pine','deadTree'].includes(f.kind))W.detail.tree(c,{...f,alpha:1});else W.detail.primitive(c,f);c.restore();stats.derived++;}}
  W.settlement={kind,children,draw,masters};
 })(WS);

@@ -6,7 +6,7 @@ Statuses: **Open** = unresolved; **Implemented / verify** = code exists, accepta
 
 | ID | Problem and status | Prevention / where to inspect | Required evidence |
 | --- | --- | --- | --- |
-| P01 | Blurry terrain, objects and text at 100%+ — **Implemented / verify** | `viewport-renderer.js`, `terrain-tiles.js`, `asset-lod.js`; retain DPR, native redraw, original asset sources and separate SVG labels. | Native-DPR checks and visual inspection at 50/100/200/400%; compare artwork with source detail. |
+| P01 | Blurry terrain, objects and text at 100%+ — **Implemented / verify artistic acceptance** | `viewport-renderer.js`, `terrain-tiles.js`, `asset-lod.js`; retain DPR, native redraw, original asset sources and separate SVG labels. | v0.6 targets 50/100/150/200%; compare artwork with source detail. |
 | P02 | Lagging zoom/pan even on powerful devices — **Implemented / verify** | `Editor.transform`, `ViewportRenderer.camera/render`, `RenderService`; camera must reuse chunks rather than invalidate world data. | 1920×1080 Medium world with thousands of entities; measured frame intervals and freezes. 60 FPS is a target, not a verified fact. |
 | P03 | Brush strokes become slow — **Implemented / verify** | `queuePaint`, `flushPaint`, `brushes.paint`, invalidation wrapper in `terrain-tiles.js`; coalesce samples, interpolate and update dirty regions. | Real pointer stroke follows cursor; measure update latency and confirm one undo transaction. |
 | P04 | Rectangular seams and clipped mountains/trees/objects at zoom or chunk boundaries — **Implemented / verify** | `world-scene.js`, `viewport-renderer.js`, `renderer.js`; global placement, rotation/anchor-aware bounds and bleed. | Whole-versus-split render plus visual inspection of large rotated objects, forests and coasts across boundaries at four zoom levels. |
@@ -39,3 +39,10 @@ Statuses: **Open** = unresolved; **Implemented / verify** = code exists, accepta
 | D08 | Cached semantic variants were repeatedly overdrawn during continuous zoom — **Verified fix** | Deduplicate fallback images by physical tile in viewport-renderer. Isolated 300-second repeat: zoom p95 33.4 ms, versus 166.7 ms before the fix; cache remains bounded. |
 | L03 | Some special props, large masters and custom images still exceed source detail — **Explicit limitation** | Worker records requested/native ratio and fallback IDs; UI and package manifest disclose limits. Test deliberately oversized statue to verify warning. More faithful artwork or a type-specific decomposition is required for those types. |
 | L04 | Full recommended deep-zoom package can be large and slow — **Explicit limitation** | Sequential worker tiles, progress/cancel, `complete:false` on interruption, exact coverage and source-limit metadata. No giant intermediate canvas. Current exporter rebuilds requested tiles; it does not yet reuse an existing package incrementally. |
+
+## v0.6 focused visual target
+
+| ID | Finding and status | Prevention / evidence |
+| --- | --- | --- |
+| P10 | Extreme zoom displaced the goal of a cohesive fantasy atlas — **Verified scope; artistic/FPS acceptance qualified** | Cap camera at 2×, stable macro composition, richer terrain/forest/ridge grouping, feathered bases, smooth rivers and continuous paths. Focused browser captures and cache invariants cover 50/100/150/200%; see VALIDATION.md. The former P09 extreme-zoom target is superseded. |
+| L05 | The original first reference image is unavailable — **Reference limitation** | Repository contains demo exports, not the reference. Work follows the user's written art direction. Exact likeness requires the original image; do not claim it from generated screenshots. |

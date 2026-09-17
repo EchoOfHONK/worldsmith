@@ -4,7 +4,7 @@
 
 - Worldsmith is a local procedural fantasy world generator and editor with a premium illustrated dark fantasy atlas presentation. Preserve the existing UI, style and object library while improving it.
 - Required workflow: Generate → Edit → Add POI → Save → Load → Export PNG/JSON. Beautiful static exports alone do not satisfy the user: the working editor must also be sharp and responsive.
-- Latest feature iteration is patch v0.5: camera/brush performance, continuous world rendering, terrain, water/coasts, culling and workers. It is implemented in part; acceptance is not yet complete. See `TODO.md` and `VALIDATION.md`.
+- v0.6 prioritizes a cohesive illustrated editor at 50/100/150/200%, maximum zoom 2×. The user explicitly superseded extreme deep zoom. See TODO.md and VALIDATION.md.
 - Explicit user preference: preserve `0.0.0.0` server binding. Default port 4173; `PORT` overrides it.
 - User requested rolling AI development records after each actionable prompt; their maintenance rules live in `AGENTS.md`.
 
@@ -25,11 +25,11 @@
 - Important hidden connection: `terrain-tiles.js` wraps `WS.surface.invalidate` to invalidate coast distance, terrain tiles and spatial scene caches. Do not diagnose a missing invalidation by reading `surface.js` alone.
 - `world-scene.js` indexes objects and deterministic mountain/forest blocks. World-space noise and padded bounds prevent chunk-local patterns and clipped objects.
 - Editor labels use SVG; exported labels use Canvas with worker-loaded bundled fonts.
-- Current screen-chunk cache budget is 192 MiB, distinct from terrain/asset caches and total process/GPU memory. Preserve DPR in Performance and Balanced modes.
+- Current screen-chunk cache budget is 128 MiB, distinct from terrain/asset caches and total process/GPU memory. Preserve DPR in Performance and Balanced modes.
 
 ## Data and assets
 
-- App package version is `0.5.0`; saved-world schema remains v2. `storage.js` validates data and `model.js` migrates v1. See `DATA_FORMAT.md`.
+- App package version is `0.6.0`; saved-world schema remains v2. `storage.js` validates data and `model.js` migrates v1. See `DATA_FORMAT.md`.
 - Grid cells are 5 world pixels. Custom dimensions are 300–3200 on each side. Export long edges include 2048/4096/8192 with aspect ratio preserved.
 - Custom PNG/WebP assets live in IndexedDB and are embedded into saved JSON for portability. Validation limits include 100 assets / 30 MB serialized collection and 4096-pixel source sides.
 - The catalog has 104 configured object types; some share artwork. Bundled atlases and four master images have finite source detail. Do not claim that upscaling creates missing detail. Provenance and font licenses are in `ASSETS.md` and `assets/fonts/`.
@@ -37,19 +37,19 @@
 
 ## Evidence and current limits
 
-- 2026-09-16: `npm test` passed 24 model/editor, 2 render-service lifecycle and 14 semantic checks. It rewrites the demo JSON as a side effect.
+- 2026-09-16: `npm test` passed 24 model/editor, 2 render-service lifecycle and 17 focused atlas checks. It rewrites the demo JSON as a side effect.
 - Current browser evidence and unconfirmed checks are in `VALIDATION.md`. Earlier copied reports do not certify this revision. Stable 60 FPS and absence of whole-process memory growth remain unverified.
 - Standalone bundled Playwright Chromium works in the Windows workspace; the earlier launch restriction was environment-specific. Tests accept WORLDSMITH_BASE_URL for an alternate server port. Run timing benchmarks separately from rendering/export workloads.
 
 - Worker font loader must be named loadFonts: a top-level fonts function shadows WorkerGlobalScope.fonts and breaks PNG export. Browser export coverage guards this.
 
-## Semantic zoom
+## Focused atlas policy
 
-- Logical `semanticZoom` is independent of physical raster resolution and is included in viewport cache keys. Cross-fades are centralized in `render-config.js` / `semantic-lod.js`; DPR and quality never seed content.
-- `world-detail.js` owns bounded material patches, path context and parent-relative peak/tree children. `settlement-detail.js` owns render-only POI children. These are never persisted as editable objects. The worker imports the same modules as the main page.
-- v2 gains defaulted `detailModel:{version:1,salt:"worldsmith"}` plus optional importance/zoom ranges on objects and labels. Width, height, cell size and original geometry stay unchanged. Unsupported detail versions fail validation rather than silently reshuffling content.
-- Generated road endpoints must copy POI coordinates, not share their mutable position objects. The local worker-update test exposed this aliasing; a focused regression guards it.
-- Object-only edits patch the old/new footprint union; they must not invalidate the global path context. Terrain edits retain bounded coast/terrain padding. Main/worker feature identities are tested after object movement.
-- Deep Zoom exports stream 512-square WebP tiles with separate pixel-coordinate vectors through `deep-zoom.js`; File System Access UI lives in `semantic-ui.js`. Full recommended ElderMar top extent is 28,800×19,200, not a resized authoritative project or giant canvas. Partial coverage and incomplete exports are explicitly marked.
-- Runtime source ratios above 1.35 trigger warnings; custom and unsupported artwork remains finite. Counts in the debug panel are chunk draw counts, not unique entity counts. See SEMANTIC_ZOOM.md and VALIDATION.md before making quality/performance claims.
-- Cached semantic fade variants must be deduplicated by physical tile during fallback composition. Drawing every variant repeatedly caused measurable zoom stalls; the isolated five-minute repeat after deduplication is recorded in VALIDATION.md.
+- Logical zoom remains separate from raster sampling. The 2× cap applies to zoom controls, wheel and fit. Macro art no longer decomposes; stable world materials appear across the range.
+- Viewport keys include raster LOD and explicit object-visibility signature, but not every tiny zoom change. This avoids redundant worker draws while respecting optional min/maxZoom. Labels stay SVG.
+- atlas-style.js supplies cached smooth path geometry, ground overlays, source-sized edge feathers and POI footing. World-scene uses stable coordinate hashes for varied forest/mountain art and clearings. See SEMANTIC_ZOOM.md.
+- Generator road endpoints must copy POI positions rather than share mutable objects. New generation adds short access trails, but old saved worlds are not regenerated.
+- Object-only edits patch old/new footprint union; terrain edits preserve bounded invalidation. Material cache remains 256 patches, worker terrain cache 32 tiles.
+- The optional tile exporter now uses logical maxZoom 2, default DPR 2, renderModel atlas-v6 and cache algorithm 2. ElderMar top extent is 7200×4800. PNG 2K/4K/8K is unchanged.
+- Saved schema stays v2 with existing detailModel defaults. Source/master/custom warnings remain; fixed-range rendering does not create pixels missing from source art.
+- First reference image is absent from the repository. Do not claim an exact reference match without obtaining it. Current before/after images and qualified performance results are in VALIDATION.md.

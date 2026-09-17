@@ -1,30 +1,22 @@
 # Work queue
 
-## Current request — semantic deep zoom
+## v0.6 — focused atlas at 50–200%
 
-- [x] Inspect the render path and run baseline tests; record SEMANTIC_ZOOM.md.
-- [x] Add logical zoom plumbing and versioned deterministic detail primitives.
-- [x] Implement terrain, mountain/forest, settlement/ruin and path hierarchies with source metrics.
-- [x] Add visibility defaults, local invalidation and worker integration.
-- [x] Add a streamed WebP tile-pyramid package with separate vectors.
-- [x] Verify DPR identity, seams, 800% feature content, exports and stress; retain visual evidence.
-- [x] Reconcile documentation and report remaining source-art/performance limits.
+- [x] Cap wheel/buttons/fit at 200%; reuse stable atlas chunks across zoom.
+- [x] Enrich ground, forest masses, ridge grouping, smooth water/roads and POI footing using bundled art.
+- [x] Refine generated forest clearings and landmark access without regenerating saved worlds.
+- [x] Verify four working zooms at DPR 1/2, seams, cache identity, editing, PNG exports and new generation; retain screenshots.
+- [x] Complete final isolated performance repeat and reconcile measured limits. Commit status is recorded in Git history.
 
-## Resume v0.5 acceptance
+## Qualified acceptance / future evidence
 
-Continue from the current implementation. Detailed measured results and limitations live in `VALIDATION.md`.
-
-- [x] Verify Ultra and responsive worker generation on the current implementation.
-- [x] Recheck custom PNG import → pointer placement/transform edit → Save → Load → game JSON; verify 2K/4K/8K exports and custom image pixels.
-- [x] Complete the five-minute 1920×1080 Medium-world workload with thousands of entities, timing distributions, chunk-cache and post-GC page-heap evidence.
-- [x] Inspect 50/100/200/400% views and retain local evidence; split/whole comparisons pass at four LODs.
-- [x] Run the combined expanded world-render suite, including the added export groups and 800%.
-- [ ] Revisit hard/repeated mountain silhouettes and angular close-up rivers. Compare source artwork before changing rendering or commissioning replacements.
-- [ ] Gather a longer post-GC heap series plus worker/process/GPU memory and pointer-to-present latency before asserting stable 60 FPS or leak freedom. The semantic workload has a separate isolated repeat; see VALIDATION.md.
+- The original first reference is absent from the repository. Exact artistic comparison requires that image; current changes follow the written direction. Source repetition remains a bundled-art limitation.
+- Blanket FPS improvement and stable 60 FPS remain unconfirmed; final pan/zoom p95 was 33.4/50 ms despite lower cache use. See VALIDATION.md.
+- Longer post-GC series, worker/process/GPU memory and pointer-to-present latency remain unmeasured. Do not assert leak freedom or stable 60 FPS from image-cache bounds.
 
 ## Recent completion
 
-- 40 automated checks plus semantic rendering, local edits, complete overview pyramid and combined custom/PNG regression suites pass.
-- Semantic detail, worker source-ratio warnings, visibility controls and streamed Deep Zoom export are implemented. v1/v2 compatibility and authoritative coordinates remain intact.
-- Isolated five-minute workload: 3,745 entities, no errors, 191.96 MiB chunk cache within 192 MiB, seven completed brush transactions. Zoom p95 33.4 ms; 800% pan p95 16.8 ms. Performance/visual acceptance remains qualified; see `VALIDATION.md`.
-- Commit status is recorded in Git history. Push is not part of the current request.
+- 43 automated checks pass; focused atlas, local-edit, full PNG/custom-asset regression, optional tile export and fresh-generation suites pass.
+- Earlier 800% work supplied the deterministic detail/worker foundation; that product target is superseded by v0.6. Macro decomposition is dormant; the optional tile profile now stops at logical 2×.
+- Screen cache budget is 128 MiB, down from 192. Timings and limitations are in VALIDATION.md; do not treat every performance metric as improved.
+- Commit status lives in Git history. Push is not part of this request.

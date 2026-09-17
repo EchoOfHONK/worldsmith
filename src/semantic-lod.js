@@ -1,7 +1,7 @@
 (function(W){
  const cfg=W.config.render.semantic;
  const smooth=(a,b,v)=>{const t=Math.max(0,Math.min(1,(v-a)/(b-a)));return t*t*(3-2*t);};
- function weights(zoom=1){const regional=smooth(...cfg.regional,zoom),local=smooth(...cfg.local,zoom),inspection=smooth(...cfg.inspection,zoom);return{overview:1-regional,regional:regional*(1-local),local:local*(1-inspection),inspection,hierarchy:local,material:regional,band:inspection>.5?'inspection':local>.5?'local':regional>.5?'regional':'overview'};}
+ function weights(zoom=1){const regional=smooth(...cfg.regional,zoom);return{overview:1-regional,regional,local:0,inspection:cfg.fineOpacity,hierarchy:0,material:cfg.materialOpacity,band:zoom<.75?'overview':'atlas'};}
  function hash(...parts){let h=2166136261;for(const ch of parts.join('|')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}h^=h>>>16;h=Math.imul(h,2246822507);h^=h>>>13;return(h>>>0)/4294967296;}
  function id(p,layer,x,y,child=''){return [p.detailModel?.version||1,p.detailModel?.salt||'worldsmith',p.seed,layer,x,y,child].join(':');}
  const random=(p,layer,x,y,child='')=>hash(id(p,layer,x,y,child));

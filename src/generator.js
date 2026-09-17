@@ -70,7 +70,7 @@
    else if(riverDistance[i]<3&&alt<.5)b='valley';
    else if(h<.3)b='waste';
    else if(a.ruins>70&&patch<.3)b='ruined';
-   const density=clamp((patch-.28)*2.1*a.forests/70+(h-.4)*.45);
+   const glade=wet(u*31+93,v*31+41),density=clamp(((patch-.25)*2.15*a.forests/70+(h-.4)*.45)*(glade>.68?.35:1));
    if(['plain','valley','tundra'].includes(b)&&density>.31&&a.forests>0)b=t<.39?'conifer':'forest';
    p.biomes[i]=b;p.forestDensity[i]=a.forests===0?0:['forest','conifer','swamp','deadforest','cursed'].includes(b)?Math.max(.2,density):density*.12;
    // Config-defined extra biomes can opt in without changing generation code.
@@ -95,7 +95,10 @@
   progress('Оставляем следы древнего мира',92);
   for(const r of p.rivers.slice(0,5)){const pt=r.points.find((pt,k)=>k>3&&p.terrain[index(p,r.points[k-3].x,r.points[k-3].y)]-p.terrain[index(p,pt.x,pt.y)]>.055);if(pt)add('waterfall',{pt},'Серебряный каскад');}
   for(let k=0;k<width*height/18000;k++){const at=choose(i=>p.terrain[i]>sea+.03,30);if(at){const o=add(p.biomes[at.i]==='ruined'?'cemetery':rand()<.86?'rock':'camp',at,'');o.layer='Decorations';o.scale=.55+rand()*.55;}}
-  W.placement.enrich(p,choose,add,rand,riverDistance);W.labels.generate(p);progress('Атлас готов',100);return p;
+  W.placement.enrich(p,choose,add,rand,riverDistance);
+  // Short access paths connect interesting sites to the existing network, on dry land.
+  if(a.roads>0&&p.roads.length){const access=p.objects.filter(o=>o.layer==='POI'||cfg.objects[o.type].category==='ruins').slice(0,Math.round(8*width/1800));for(const o of access){let anchor=null,best=260;for(const road of p.roads)for(let k=0;k<road.points.length;k+=4){const pt=road.points[k],d=Math.hypot(pt.x-o.position.x,pt.y-o.position.y);if(d<best){best=d;anchor=pt;}}if(!anchor||best<15)continue;const pts=route(p,anchor,o.position,riverMask);if(pts.length){p.roads.push({id:'access-'+o.id,kind:'trail',width:1.15,points:pts});for(const pt of pts)if(riverDistance[index(p,pt.x,pt.y)]<1.5&&!p.objects.some(o=>['bridge','ford'].includes(o.type)&&Math.hypot(o.position.x-pt.x,o.position.y-pt.y)<70))add('ford',{pt:{...pt}},'Тропа через брод');}}}
+  W.labels.generate(p);progress('Атлас готов',100);return p;
  }
  function route(p,start,end,riverMask){
   const step=2,cols=Math.ceil(p.cols/step),rows=Math.ceil(p.rows/step),N=cols*rows;

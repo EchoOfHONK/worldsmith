@@ -25,7 +25,7 @@ Entry points below show literal search anchors and their current first matching 
 | [MEMORY.md](MEMORY.md) | Durable product decisions, architecture and preferences | — |
 | [PROBLEMS.md](PROBLEMS.md) | User reports, observed defects and regression prevention | — |
 | [README.md](README.md) | User setup, features and test commands | — |
-| [SEMANTIC_ZOOM.md](SEMANTIC_ZOOM.md) | Semantic zoom architecture, implementation split and source limitations | — |
+| [SEMANTIC_ZOOM.md](SEMANTIC_ZOOM.md) | Focused atlas architecture, compatibility and source limitations | — |
 | [TODO.md](TODO.md) | Current request, unfinished acceptance work and next actions | — |
 | [VALIDATION.md](VALIDATION.md) | Confirmed checks, missing evidence and environment limits | — |
 | [demo-atlas.png](demo-atlas.png) | Bundled illustrated demo export with cartography | — |
@@ -37,12 +37,13 @@ Entry points below show literal search anchors and their current first matching 
 | [package.json](package.json) | App version and npm commands | — |
 | [server.cjs](server.cjs) | Static HTTP server; port and network binding | `http.createServer` (3) |
 | [style.css](style.css) | Editor layout, typography, controls and map styling | `:root` (2) |
+| [tests-atlas-generation.cjs](tests-atlas-generation.cjs) | Worker generation, landmark access trails and focused visual captures | — |
 | [tests-deep-zoom.cjs](tests-deep-zoom.cjs) | Full tile package, exact WebP dimensions and failed-export manifest checks | — |
 | [tests-local-render.cjs](tests-local-render.cjs) | Object-local invalidation, worker identity and explicit source warnings | — |
 | [tests-performance.cjs](tests-performance.cjs) | Five-minute Playwright timing/cache/heap workload | `const duration=` (4) |
 | [tests-render-service.cjs](tests-render-service.cjs) | Worker failure/disposal regression checks with a fake worker | `class Worker` (2) |
 | [tests-render.cjs](tests-render.cjs) | Compatibility entry point forwarding to the current world-render suite | `require(` (2) |
-| [tests-semantic-render.cjs](tests-semantic-render.cjs) | DPR1/2 inspection screenshots, semantic seams, edge energy and pyramid evidence | — |
+| [tests-semantic-render.cjs](tests-semantic-render.cjs) | 50/100/150/200% DPR1/2 screenshots, seams, identity and cache reuse | — |
 | [tests-semantic.cjs](tests-semantic.cjs) | Deterministic detail, mask, migration and tile coverage checks | — |
 | [tests-world-render.cjs](tests-world-render.cjs) | DPR, split/whole seams, brushes, quality and worker checks | `const out=` (2) |
 | [tests.cjs](tests.cjs) | Model, generation, editor and persistence checks; rewrites demo fixture | `function test` (4); `const ed=` (14) |
@@ -53,6 +54,7 @@ Entry points below show literal search anchors and their current first matching 
 | --- | --- | --- |
 | [src/asset-lod.js](src/asset-lod.js) | Master artwork selection and resolution-aware asset cache | `function sample` (5); `function source` (6) |
 | [src/assets.js](src/assets.js) | Load bundled sprite atlases and expose source rectangles/drawing | `W.assets=` (3) |
+| [src/atlas-style.js](src/atlas-style.js) | Stable atlas path smoothing, ground overlays and POI footing | `function curve` (4); `function ground` (5); `function footing` (6) |
 | [src/brushes.js](src/brushes.js) | Brush layer selection and per-cell terrain edits | `function layer` (2); `function paint` (3) |
 | [src/catalog.js](src/catalog.js) | Object definitions, category metadata and search | `W.catalog=` (23) |
 | [src/coast.js](src/coast.js) | Shore distance field, currents and tapered river rendering | `function distance` (3); `function flow` (8); `function rivers` (9) |
@@ -61,7 +63,7 @@ Entry points below show literal search anchors and their current first matching 
 | [src/deep-zoom.js](src/deep-zoom.js) | Streamed tile pyramid, affected coordinates, manifest and vector serialization | `function manifest` (4); `function affectedTiles` (3); `async function exportProject` (11) |
 | [src/editor.js](src/editor.js) | Input gestures, camera, selection and transactional undo | `class Editor` (2); `beginStroke(){` (7); `endStroke(){` (10); `queuePaint(` (19); `flushPaint(){` (20); `bind(){` (30) |
 | [src/generator-worker.js](src/generator-worker.js) | Background generation and progress message entry | `onmessage` (3) |
-| [src/generator.js](src/generator.js) | Global geography, drainage, climate, populations and routes | `function generate` (10); `function route` (100) |
+| [src/generator.js](src/generator.js) | Global geography, drainage, climate, populations and routes | `function generate` (10); `function route` (103) |
 | [src/icons.js](src/icons.js) | Inline SVG UI icon renderer | `W.icon=` (3) |
 | [src/labels.js](src/labels.js) | Label creation, generation, layout and hit detection | `function create` (2); `function generate` (3); `function layout` (11); `function hit` (22) |
 | [src/library-ui.js](src/library-ui.js) | Asset catalog, previews, import form and custom metadata editing | `function refresh` (14); `function preview` (15); `function draft` (16); `function drawDraft` (17) |
@@ -77,14 +79,14 @@ Entry points below show literal search anchors and their current first matching 
 | [src/renderer.js](src/renderer.js) | Layered raster composition, object drawing, coast contours and export text | `function contours` (6); `function object` (22); `function labels` (38); `function render` (45) |
 | [src/semantic-lod.js](src/semantic-lod.js) | Centralized logical bands, deterministic identity and visibility helpers | `function weights` (4); `function id` (6) |
 | [src/semantic-ui.js](src/semantic-ui.js) | Visibility controls and folder-based deep zoom export with cancellation | — |
-| [src/settlement-detail.js](src/settlement-detail.js) | Render-only POI decompositions and master context | `function children` (5); `function draw` (16) |
+| [src/settlement-detail.js](src/settlement-detail.js) | POI illustration integration and dormant legacy decomposition | `function children` (5); `function draw` (16) |
 | [src/storage.js](src/storage.js) | Project validation, JSON save/load and banded PNG export | `function validate` (2); `function json` (22); `function png` (25); `W.storage=` (26) |
 | [src/surface.js](src/surface.js) | Smoothed elevation field and world-space surface microdetails | `function heightField` (3); `function details` (5); `W.surface=` (6) |
 | [src/terrain-tiles.js](src/terrain-tiles.js) | Terrain/water/relief tile generation and chained cache invalidation | `function update` (4); `function tile` (7); `function render` (16); `const previous=` (17) |
 | [src/tooltips.js](src/tooltips.js) | Tooltip interaction and positioning | `(function` (1) |
 | [src/ui.js](src/ui.js) | Application bootstrap, panels, settings and Generate/Save/Load bindings | `const editor=` (9); `function refresh` (21); `function generate` (38); `function buildThumbnails` (51) |
 | [src/viewport-renderer.js](src/viewport-renderer.js) | Visible chunk cache, camera composition, SVG labels and debug guides | `class ViewportRenderer` (3); `waitReady(){` (5); `invalidate(rect)` (8); `render(now` (15); `labels(p` (26); `guides(p` (26) |
-| [src/world-detail.js](src/world-detail.js) | Bounded material patches, path context and parent-relative nature children | `function materials` (22); `function hierarchy` (39); `function invalidate` (45) |
+| [src/world-detail.js](src/world-detail.js) | Bounded material patches, shared path context and dormant legacy hierarchy | `function materials` (22); `function hierarchy` (39); `function invalidate` (45) |
 | [src/world-scene.js](src/world-scene.js) | Spatial grid, sprite bounds and deterministic forest/mountain blocks | `function bounds` (4); `class Grid` (5); `function block` (11); `function sprites` (19); `W.scene=` (20) |
 
 ## Maintenance scripts
@@ -160,4 +162,4 @@ Entry points below show literal search anchors and their current first matching 
 | [assets/fonts/font-9.woff2](assets/fonts/font-9.woff2) | Bundled font subset; family/range mapping in assets/fonts/fonts.css | — |
 | [assets/fonts/fonts.css](assets/fonts/fonts.css) | Bundled font-face declarations and Unicode subsets | `@font-face` (2) |
 
-Total: **117 files**.
+Total: **119 files**.

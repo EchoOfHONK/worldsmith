@@ -2,7 +2,7 @@
  const {clamp,index}=W.model;
  const rgb=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
  const mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
- function line(c,item,color,width){if(item.points.length<2)return;c.beginPath();c.moveTo(item.points[0].x,item.points[0].y);for(let i=1;i<item.points.length-1;i++){const a=item.points[i],b=item.points[i+1];c.quadraticCurveTo(a.x,a.y,(a.x+b.x)/2,(a.y+b.y)/2);}const last=item.points.at(-1);c.lineTo(last.x,last.y);c.strokeStyle=color;c.lineWidth=width;c.lineCap='round';c.lineJoin='round';c.stroke();}
+ function line(c,item,color,width){if(W.atlas)item={...item,points:W.atlas.curve(item)};if(item.points.length<2)return;c.beginPath();c.moveTo(item.points[0].x,item.points[0].y);for(let i=1;i<item.points.length-1;i++){const a=item.points[i],b=item.points[i+1];c.quadraticCurveTo(a.x,a.y,(a.x+b.x)/2,(a.y+b.y)/2);}const last=item.points.at(-1);c.lineTo(last.x,last.y);c.strokeStyle=color;c.lineWidth=width;c.lineCap='round';c.lineJoin='round';c.stroke();}
  function contours(c,p,level,color,width){
   c.beginPath();const cs=p.cellSize,heights=W.surface?.heightField(p)||p.terrain;
   for(let y=0;y<p.rows-1;y++)for(let x=0;x<p.cols-1;x++){const i=y*p.cols+x,v=[heights[i],heights[i+1],heights[i+p.cols+1],heights[i+p.cols]],corners=[[x+.5,y+.5],[x+1.5,y+.5],[x+1.5,y+1.5],[x+.5,y+1.5]],pts=[];for(let k=0;k<4;k++){const j=(k+1)%4;if((v[k]<level)===(v[j]<level))continue;const t=(level-v[k])/(v[j]-v[k]);pts.push([(corners[k][0]+(corners[j][0]-corners[k][0])*t)*cs,(corners[k][1]+(corners[j][1]-corners[k][1])*t)*cs]);}for(let k=0;k+1<pts.length;k+=2){c.moveTo(...pts[k]);c.lineTo(...pts[k+1]);}}c.strokeStyle=color;c.lineWidth=width;c.stroke();
@@ -50,14 +50,14 @@
    if(on('Labels')&&options.labels!==false)labels(c,p,selectedId,on,semanticZoom);if((!only||only==='Frame')&&(options.frame??p.styling.frame))frame(c,p);c.restore();return;
   }
   const inView=(x,y,pad=180)=>x+pad>=rect.x&&y+pad>=rect.y&&x-pad<=rect.x+rect.width&&y-pad<=rect.y+rect.height;
-  const drawHierarchy=layer=>{for(const s of W.scene.sprites(p,rect,layer)){const weight=W.semantic?.weights(semanticZoom).hierarchy||0;if(weight<1){W.assets.draw(c,s.id,s.x,s.y,s.size,s.variant,.96*(1-weight));metrics.macro++;}for(const child of W.detail?.hierarchy(p,s,semanticZoom)||[]){if(!W.scene.intersects(child.bounds,rect))continue;if(child.id!=null)W.assets.draw(c,child.id,child.x,child.y,child.size,child.variant,child.alpha);else W.detail.tree(c,child);metrics.derived++;}}};
+  const drawHierarchy=layer=>{for(const s of W.scene.sprites(p,rect,layer)){const weight=W.semantic?.weights(semanticZoom).hierarchy||0;if(weight<1){W.atlas?.shadow(c,s);W.assets.draw(c,s.id,s.x,s.y,s.size,s.variant,.96*(1-weight));metrics.macro++;}for(const child of W.detail?.hierarchy(p,s,semanticZoom)||[]){if(!W.scene.intersects(child.bounds,rect))continue;if(child.id!=null)W.assets.draw(c,child.id,child.x,child.y,child.size,child.variant,child.alpha);else W.detail.tree(c,child);metrics.derived++;}}};
   const drawPOI=o=>W.settlement?W.settlement.draw(c,p,o,semanticZoom,(ctx,item)=>object(ctx,item,item.id===selectedId,mode==='Editor'),metrics):object(c,o,o.id===selectedId,mode==='Editor');
-  const passes={Terrain(){W.surface?.details(c,p,on,rect,options);},Height(){W.surface.render(p,c,mode,visible,terrain,{...options,surfaceLayer:'Height'});},
+  const passes={Terrain(){W.atlas?.ground(c,p,rect);W.surface?.details(c,p,on,rect,options);},Height(){W.surface.render(p,c,mode,visible,terrain,{...options,surfaceLayer:'Height'});},
    Water(){W.surface.render(p,c,mode,visible,terrain,{...options,surfaceLayer:'Water'});W.coast?.flow(c,p,rect);metrics.materials+=W.detail?.drawMaterials(c,p,on,rect,{...options,materialLayer:'water'})||0;},
    Rivers(){W.coast.rivers(c,p,rect,line);metrics.paths+=W.detail?.drawPaths(c,p,rect,semanticZoom,'river')||0;},
    Mountains(){drawHierarchy('Mountains');},
    Vegetation(){drawHierarchy('Vegetation');},
-   Roads(){for(const r of p.roads){c.setLineDash(r.kind==='trail'?[3,5]:[]);line(c,r,'#434a354a',r.width+4);line(c,r,'#c0ae80aa',r.width+1);line(c,r,'#ded0a16b',r.width*.35);c.setLineDash([]);}metrics.paths+=W.detail?.drawPaths(c,p,rect,semanticZoom,'road')||0;},
+   Roads(){for(const r of p.roads){c.setLineDash([]);line(c,r,'#383f2933',r.width+2);line(c,r,'#a9956db0',r.width+.4);line(c,r,'#d4c29980',r.width*.32);c.setLineDash([]);}metrics.paths+=W.detail?.drawPaths(c,p,rect,semanticZoom,'road')||0;},
    Structures(){for(const o of W.scene.objects(p,rect,'Structures'))drawPOI(o);},
    POI(){for(const o of W.scene.objects(p,rect,'POI'))drawPOI(o);},
    Decorations(){for(const o of W.scene.objects(p,rect,'Decorations'))drawPOI(o);},

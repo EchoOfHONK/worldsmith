@@ -1,6 +1,6 @@
 // All world rasterization runs off the UI thread. Main thread owns the camera.
 self.window=self;self.document={createElement:()=>new OffscreenCanvas(1,1)};
-importScripts('config.js','catalog.js','render-config.js','semantic-lod.js','random.js','objects.js','model.js','labels.js','placement.js','generator.js','surface.js','world-scene.js','coast.js','terrain-tiles.js','world-detail.js','settlement-detail.js','renderer.js','deep-zoom.js');
+importScripts('config.js','catalog.js','render-config.js','semantic-lod.js','random.js','objects.js','model.js','labels.js','placement.js','generator.js','surface.js','world-scene.js','coast.js','terrain-tiles.js','atlas-style.js','world-detail.js','settlement-detail.js','renderer.js','deep-zoom.js');
 WS.config.render.terrain.maxTiles=WS.config.render.worldChunks.workerTerrainTiles;
 let sourceStats={worstSourceRatio:0,sourceLimited:0,fallbackAssets:[]};function track(c,width,native,id){const t=c.getTransform(),ratio=width*Math.hypot(t.a,t.b)/native;sourceStats.worstSourceRatio=Math.max(sourceStats.worstSourceRatio,ratio);if(ratio>WS.semantic.cfg.maxAtlasRatio){sourceStats.sourceLimited++;if(!sourceStats.fallbackAssets.some(a=>a.id===id))sourceStats.fallbackAssets.push({id,ratio,native,requested:width*Math.hypot(t.a,t.b)});}}
 const sources=[],custom=new Map();let project=null,revision=0,draws=0;
@@ -11,7 +11,7 @@ const canvas=new OffscreenCanvas(1,1);let fontsReady;
 function loadFonts(){return fontsReady??=(async()=>{const css=await (await fetch('../assets/fonts/fonts.css')).text();for(const match of css.matchAll(/@font-face\s*\{([^}]+)\}/g)){const block=match[1],value=name=>block.match(new RegExp(name+':\\s*([^;]+)'))?.[1]?.trim(),family=value('font-family')?.replace(/['"]/g,''),url=block.match(/url\(['"]?([^)'"\s]+)/)?.[1];if(!family||!url)continue;const face=new FontFace(family,'url('+new URL('../assets/fonts/'+url,self.location.href)+')',{style:value('font-style')||'normal',weight:value('font-weight')||'normal',unicodeRange:value('unicode-range')||'U+0-10FFFF'});self.fonts.add(await face.load());}})();}
 
 self.onmessage=async({data:m})=>{try{
- if(m.type==='assets'){for(let i=0;i<m.sources.length;i++){const s=m.sources[i];sources[i]=s?{...s,image:m.images[s.image]}:null;}return;}
+ if(m.type==='assets'){for(let i=0;i<m.sources.length;i++){const s=m.sources[i];sources[i]=s?WS.atlas.soften({...s,image:m.images[s.image]},i):null;}return;}
  if(m.type==='custom'){custom.get(m.id)?.close();custom.set(m.id,m.image);WS.config.objects[m.id]=m.definition;return;}
  if(m.type==='project'){project=m.project;revision=m.revision;Object.assign(WS.config.objects,m.definitions);return;}
  if(m.type==='objects'){project.objects=m.objects;project.labels=m.labels;project.customAssets=m.customAssets;revision=m.revision;WS.scene.replaceObjects(project);WS.scene.invalidate(project,m.rect);WS.detail.invalidate(project,m.rect,true);return;}

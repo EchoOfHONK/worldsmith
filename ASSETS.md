@@ -45,3 +45,7 @@ Cormorant Garamond and Manrope are bundled locally in `assets/fonts`. Their SIL 
 The semantic renderer introduces no new downloaded/generated artwork. It reuses the bundled peak variants (16–23), conifer groups (28–31), small houses/farms/market, ruin fragments, rock (88), oak (92) and dead tree (93) crops at smaller world sizes. Ground chips, grass/reeds, roots/logs, snow breaks, water marks and path detail are local vector primitives. Original licenses/provenance below still apply.
 
 Ordinary source crops remain about 311–313 px; landmark crops and 1254-pixel masters retain their existing finite sizes. The render worker measures source demand. Supported parent groups cross-fade into smaller children; unsupported landmarks, excessive instance scales and custom assets retain a visible source-limit warning. No upscaling claim is made. See [SEMANTIC_ZOOM.md](SEMANTIC_ZOOM.md).
+
+## v0.6 atlas compositing
+
+No new bitmap artwork was introduced. The worker prepares source-sized alpha feathers for the lower edges of mountain and forest cells to blend their flat bases into the terrain. Source resolution is unchanged. Ground pools, material strokes, shadows and POI footing are procedural Canvas layers. Existing masters and custom images keep their native-resolution warnings. Original reference pixels are unavailable in this repository, so exact reference matching is not claimed.
